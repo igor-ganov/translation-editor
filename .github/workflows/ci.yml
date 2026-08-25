@@ -89,19 +89,31 @@ jobs:
       - name: Generate the Android project
         run: bun run tauri android init --ci
 
-      # A debug build for the emulator: it skips the size-optimised LTO profile,
-      # which would add many minutes for no benefit to a smoke test, and Gradle
-      # signs it with the standard debug key so it installs unattended.
+      # The release profile is what ships, and it is the one that could break at
+      # runtime: `lto` and `panic = "abort"` change the binary in ways a debug
+      # build would never reveal. Testing anything else here proves less.
       - name: Build the APK
-        run: bun run tauri android build --apk --debug --target x86_64
+        run: bun run tauri android build --apk --target x86_64
 
-      - name: Locate the APK
+      # The standard Android debug key. It is not a secret — its password is
+      # published in the SDK docs — and it exists so a build installs without a
+      # release keystore, which stays out of CI entirely.
+      - name: Create a debug keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkeypair -v -keystore ~/.android/debug.keystore \
+            -storepass android -keypass android -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Sign the APK
         id: apk
         run: |
-          path=$(find src-tauri/gen/android -name '*.apk' -path '*debug*' | head -1)
-          test -n "$path" || { echo "no APK was produced"; exit 1; }
-          ls -la "$path"
-          echo "path=$path" >> "$GITHUB_OUTPUT"
+          unsigned=$(find src-tauri/gen/android -name '*-unsigned.apk' | head -1)
+          test -n "$unsigned" || { echo "no APK was produced"; exit 1; }
+          mkdir -p dist-apk
+          bash scripts/sign-apk.sh "$unsigned" dist-apk/translation-editor-x86_64.apk
+          echo "path=dist-apk/translation-editor-x86_64.apk" >> "$GITHUB_OUTPUT"
 
       - name: Install and launch on an emulator
         uses: reactivecircus/android-emulator-runner@v2
