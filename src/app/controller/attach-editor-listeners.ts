@@ -9,6 +9,7 @@ import { handleConfirmImport } from './handlers/handle-confirm-import.js'
 import { handleCancelImport } from './handlers/handle-cancel-import.js'
 import { handleNextUnapproved } from './handlers/handle-next-unapproved.js'
 import { handleUndo } from './handlers/handle-undo.js'
+import { handleExportLog } from './handlers/handle-export-log.js'
 import { handleRoute } from './handlers/handle-route.js'
 import type { Deps } from './deps.js'
 
@@ -31,5 +32,6 @@ export const attachEditorListeners =
     host.addEventListener('te-cancel-import', handleCancelImport(deps))
     host.addEventListener('te-next-unapproved', handleNextUnapproved(deps)(host))
     host.addEventListener('te-undo', handleUndo(deps))
+    host.addEventListener('te-export-log', handleExportLog(deps))
     host.addEventListener('te-close-project', handleRoute(deps)('projects'))
   }

@@ -8,6 +8,7 @@ export const editorEvents = {
   importMarkup: 'te-import-markup',
   nextUnapproved: 'te-next-unapproved',
   undo: 'te-undo',
+  exportLog: 'te-export-log',
   openSettings: 'te-open-settings',
   closeProject: 'te-close-project',
   cursorMove: 'te-cursor-move',

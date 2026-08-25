@@ -42,6 +42,9 @@ export const renderEditorActions = (
     <button type="button" @click=${send(host, editorEvents.exportDocx)}>Export .docx</button>
     <button type="button" @click=${send(host, editorEvents.exportMarkup)}>Export markup</button>
     <button type="button" @click=${send(host, editorEvents.importMarkup)}>Import markup</button>
+    <button type="button" title="Save a diagnostic log to share" @click=${send(host, editorEvents.exportLog)}>
+      Save log
+    </button>
     <button type="button" @click=${send(host, editorEvents.openSettings)}>Settings</button>
     <button type="button" @click=${send(host, editorEvents.closeProject)}>Projects</button>
   </div>

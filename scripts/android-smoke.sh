@@ -47,22 +47,36 @@ for _ in $(seq 1 30); do
 done
 adb shell pidof "$PACKAGE" >/dev/null 2>&1 || { echo "the app is not running"; bash "$(dirname "$0")/android-diagnose.sh" "$PACKAGE"; exit 1; }
 
-say "wait for the interface to render"
-found=""
-for _ in $(seq 1 45); do
+say "wait for a WebView to be on screen"
+webview=""
+for _ in $(seq 1 30); do
   adb exec-out uiautomator dump /dev/tty > /tmp/ui.xml 2>/dev/null || true
-  grep -q "Import .docx" /tmp/ui.xml 2>/dev/null && { found="yes"; break; }
+  grep -q "android.webkit.WebView" /tmp/ui.xml 2>/dev/null && { webview="yes"; break; }
+  sleep 2
+done
+[ -n "$webview" ] || { echo "no WebView was ever attached"; bash "$(dirname "$0")/android-diagnose.sh" "$PACKAGE"; exit 1; }
+
+say "wait for the frontend to report itself ready"
+# The interface is built from shadow roots, which the accessibility tree does not
+# descend into — so a WebView on screen proves the native shell came up, and only
+# the app's own readiness line proves the frontend actually ran. It reaches
+# logcat because the logger prints, and Tauri forwards console output there.
+ready=""
+for _ in $(seq 1 45); do
+  adb logcat -d | grep -aq "\[te\].*shell ready" && { ready="yes"; break; }
   sleep 2
 done
 
-if [ -z "$found" ]; then
-  # A Tauri app that fails to load its frontend still has a live process and a
-  # blank window, so the view hierarchy is the only honest proof it came up.
-  echo "the application shell never appeared on screen"
-  echo "--- last view hierarchy ---"; tail -c 2000 /tmp/ui.xml || true
+if [ -z "$ready" ]; then
+  echo "the frontend never reported itself ready"
+  echo "--- anything the app did say ---"
+  adb logcat -d | grep -a "\[te\]" | tail -20 || echo "(the app logged nothing at all)"
   bash "$(dirname "$0")/android-diagnose.sh" "$PACKAGE"
   exit 1
 fi
+
+say "what the app logged"
+adb logcat -d | grep -a "\[te\]" | tail -20
 
 say "crash check"
 if adb logcat -d | grep -qE "FATAL EXCEPTION|E AndroidRuntime"; then

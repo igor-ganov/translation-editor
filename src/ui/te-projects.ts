@@ -28,6 +28,8 @@ export class TeProjects extends LitElement {
       <div class="actions">
         <button type="button" @click=${() => { emit(this, projectEvents.importDocx, {}) }}>Import .docx</button>
         <button type="button" @click=${() => { emit(this, projectEvents.openSettings, {}) }}>Settings</button>
+        <button type="button" title="Save a diagnostic log to share"
+          @click=${() => { emit(this, 'te-export-log', {}) }}>Save log</button>
       </div>
       ${whenPresent(this.projects.length === 0, () => html`<p class="empty">No documents yet.</p>`)}
       <ul>

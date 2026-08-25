@@ -6,6 +6,7 @@ import type { AppState } from '../ui/store/app-state.js'
 import { initialState } from './initial-state.js'
 import { refreshProjects } from './controller/refresh-projects.js'
 import { restoreLastProject } from './restore-last-project.js'
+import { createLogger } from './create-logger.js'
 import type { Deps } from './controller/deps.js'
 
 /**
@@ -13,12 +14,14 @@ import type { Deps } from './controller/deps.js'
  * the document list, and hand back the store the shell renders from.
  */
 export const bootstrap = async (): Promise<Deps> => {
+  const logger = createLogger()
   const platform = await createPlatform()
+  logger.record('info', 'startup', `platform selected: native=${String(platform.native)}`)
   const store: Store<AppState> = createStore({
     ...initialState,
     secureCredentials: platform.settings.secureCredentials,
   })
-  const deps: Deps = { platform, store }
+  const deps: Deps = { platform, store, logger }
   await Effect.runPromise(
     pipe(
       platform.settings.load(),

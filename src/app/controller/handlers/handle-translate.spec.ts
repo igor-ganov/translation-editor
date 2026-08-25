@@ -4,6 +4,7 @@ import type { SegmentId } from '../../../core/document/types.js'
 import type { AppState } from '../../../ui/store/app-state.js'
 import { createStore } from '../../../ui/store/create-store.js'
 import { initialState } from '../../initial-state.js'
+import { createLogger } from '../../create-logger.js'
 import { handleTranslate } from './handle-translate.js'
 import { stubPlatform } from '../../../../tests/support/stub-platform.js'
 import { buildProject } from '../../../../tests/support/build-project.js'
@@ -20,7 +21,8 @@ const setUp = (respond: () => unknown) => {
   const http = { send: () => Effect.sync(() => ({ status: 200, body: JSON.stringify(respond()) })) }
   const platform = stubPlatform(http)
   const store = createStore<AppState>({ ...initialState, project: Option.some(project) })
-  return { deps: { platform, store }, project }
+  const logger = createLogger()
+  return { deps: { platform, store, logger }, project, logger }
 }
 
 const settle = async () => {
@@ -64,5 +66,16 @@ describe('handleTranslate', () => {
     await settle()
 
     expect(deps.platform.saved.length).toBeGreaterThan(0)
+  })
+
+  it('records the run in the diagnostic log, so a failure on a phone is readable', async () => {
+    const { deps, logger } = setUp(() => reply([{ id: 'b0.s0', text: 'Одно случилось.' }]))
+
+    handleTranslate(deps)()
+    await vi.waitUntil(() => deps.store.get().busy.tag === 'idle', { timeout: 5000 })
+
+    const messages = logger.entries().map((item) => item.message)
+    expect(messages.some((message) => message.includes('run started'))).toBe(true)
+    expect(messages.some((message) => message.includes('run finished'))).toBe(true)
   })
 })

@@ -15,10 +15,12 @@ export const handleTestProvider = (deps: Deps) => (): void => {
     pipe(
       provider.listModels(),
       Effect.map((models) => {
+        deps.logger.record('info', 'provider', `connected, ${String(models.length)} models`, models.slice(0, 10))
         setNotice(deps)({ tag: 'info', text: `Connected. ${String(models.length)} models available.` })
       }),
       Effect.catchAll((failure) =>
         Effect.sync(() => {
+          deps.logger.record('error', 'provider', 'connection test failed', failure)
           setNotice(deps)({ tag: 'error', text: `${failure.tag}: ${failure.message}` })
         }),
       ),

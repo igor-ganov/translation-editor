@@ -32,6 +32,7 @@ declare global {
     'te-cancel-import': CustomEvent<Record<string, never>>
     'te-next-unapproved': CustomEvent<Record<string, never>>
     'te-undo': CustomEvent<Record<string, never>>
+    'te-export-log': CustomEvent<Record<string, never>>
     'te-open-settings': CustomEvent<Record<string, never>>
     'te-close-project': CustomEvent<Record<string, never>>
     'te-scroll-to': CustomEvent<Segment>
