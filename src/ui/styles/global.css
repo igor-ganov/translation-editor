@@ -1,0 +1,84 @@
+/* Design tokens. Mobile-first: every size below is chosen for a 320px-wide viewport
+   and scales up, never the other way round. */
+:root {
+  --te-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --te-font-reading: Georgia, 'Times New Roman', serif;
+
+  --te-space-1: 0.25rem;
+  --te-space-2: 0.5rem;
+  --te-space-3: 0.75rem;
+  --te-space-4: 1rem;
+  --te-space-6: 1.5rem;
+
+  --te-radius: 0.5rem;
+  --te-touch-target: 2.75rem; /* 44px, the minimum comfortable touch size */
+
+  --te-surface: #ffffff;
+  --te-surface-sunken: #f4f5f7;
+  --te-surface-raised: #ffffff;
+  --te-border: #d6d9de;
+  --te-text: #16191d;
+  --te-text-muted: #5b6270;
+  --te-accent: #2f5cd8;
+  --te-accent-contrast: #ffffff;
+
+  --te-state-untranslated: #8a8f98;
+  --te-state-machine: #2f5cd8;
+  --te-state-edited: #8a5a00;
+  --te-state-approved: #1c7a45;
+  --te-state-failed: #b3261e;
+  --te-state-override: #6b3fa0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --te-surface: #16191d;
+    --te-surface-sunken: #101317;
+    --te-surface-raised: #1e2228;
+    --te-border: #333941;
+    --te-text: #e8eaed;
+    --te-text-muted: #9aa2af;
+    --te-accent: #7fa0ff;
+    --te-accent-contrast: #0b0d10;
+
+    --te-state-untranslated: #8a8f98;
+    --te-state-machine: #7fa0ff;
+    --te-state-edited: #e0a83c;
+    --te-state-approved: #4ec27f;
+    --te-state-failed: #ff8a80;
+    --te-state-override: #c39bf0;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: var(--te-font);
+  background: var(--te-surface-sunken);
+  color: var(--te-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--te-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

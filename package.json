@@ -1,0 +1,45 @@
+{
+  "name": "translation-editor",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "tauri": "tauri",
+    "verify": "bun run typecheck && bun run lint && bun run test"
+  },
+  "dependencies": {
+    "@lit-labs/virtualizer": "^2.1.1",
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-dialog": "~2",
+    "@tauri-apps/plugin-fs": "~2",
+    "@tauri-apps/plugin-http": "~2",
+    "@tauri-apps/plugin-store": "~2",
+    "@tauri-apps/plugin-window-state": "~2",
+    "astro": "^7.2.6",
+    "docx": "^9.5.1",
+    "effect": "^3.18.4",
+    "jszip": "^3.10.1",
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@tauri-apps/cli": "^2.9.1",
+    "@types/node": "^24.7.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-functional": "^9.0.2",
+    "fake-indexeddb": "^6.2.2",
+    "happy-dom": "^20.11.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
+  }
+}

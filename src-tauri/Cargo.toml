@@ -1,0 +1,43 @@
+[package]
+name = "app"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.11.3", features = [] }
+tauri-plugin-log = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-http = "2"
+tauri-plugin-store = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-window-state = "2"
+
+# Cargo's default release profile optimises for build time, which on Android means
+# shipping ~18 MB of unstripped, un-inlined native code inside the APK. Nothing here
+# affects behaviour: `panic = "abort"` is safe because no code catches unwinds, and
+# the frontend is embedded in this binary, so every byte saved is a byte off the APK.
+[profile.release]
+opt-level = "s"    # size over raw speed; the hot paths are in the WebView, not here
+lto = true         # cross-crate inlining lets the linker drop a great deal
+codegen-units = 1  # one unit gives LTO the whole picture
+panic = "abort"    # removes the unwinding tables
+strip = true       # symbols are not needed in a shipped build

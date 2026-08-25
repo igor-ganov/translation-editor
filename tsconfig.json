@@ -1,0 +1,26 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vitest/globals"],
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@ports/*": ["src/ports/*"],
+      "@adapters/*": ["src/adapters/*"],
+      "@ui/*": ["src/ui/*"],
+      "@app/*": ["src/app/*"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*", "*.config.mjs", "*.config.ts"],
+  "exclude": ["dist", "node_modules", "src-tauri"]
+}
