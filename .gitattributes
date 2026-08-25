@@ -1,0 +1,18 @@
+# Shell scripts and YAML run on Linux in CI; a CRLF line ending turns the
+# shebang into "/usr/bin/env bash\r" and the script dies before its first line.
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+gradlew text eol=lf
+
+# Keep everything else normalised in the repository, checked out natively.
+* text=auto
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+*.docx binary
+*.apk binary
+*.keystore binary
