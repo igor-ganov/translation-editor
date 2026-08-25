@@ -42,7 +42,7 @@ export class TeApp extends LitElement {
         return html`<p class="working">Starting…</p>`
       default:
         return html`
-          ${renderNotice(snapshot.notice)} ${renderBusy(snapshot.busy)}
+          ${renderNotice(this, snapshot.notice)} ${renderBusy(snapshot.busy)}
           ${renderPendingImport(this, snapshot.pendingImport)}
           <div class="body">${renderApp(snapshot)}</div>
         `

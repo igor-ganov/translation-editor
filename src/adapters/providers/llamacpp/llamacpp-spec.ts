@@ -1,4 +1,5 @@
 import { buildPrompt } from '../build-prompt.js'
+import { outputBudget } from '../output-budget.js'
 import { strictJsonSchema } from '../strict-json-schema.js'
 import { baseUrlOf } from '../base-url-of.js'
 import type { ProviderSpec } from '../provider-spec.js'
@@ -28,7 +29,7 @@ export const llamacppSpec: ProviderSpec = {
       headers: headers(config.apiKey),
       body: JSON.stringify({
         model: config.model,
-        max_tokens: 8192,
+        max_tokens: outputBudget(request, 8192),
         messages: [
           { role: 'system', content: prompt.system },
           { role: 'user', content: prompt.user },

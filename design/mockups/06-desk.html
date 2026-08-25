@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 · The desk</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  .desk { display: grid; gap: 2.5rem; max-width: 40rem; }
+  .group { border-top: 1px solid var(--rule); padding-top: 1rem; }
+  .group__what { font-size: 0.8125rem; color: var(--ink-faint); margin: 0 0 0.75rem; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="02-spread.html">Back to page 3</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+  <h1>Everything you can do to this document</h1>
+
+  <p class="thread" style="max-width:40rem; margin:1.5rem 0 0">
+    <span class="thread__track">
+      <span class="thread__drafted" style="width:78%"></span>
+      <span class="thread__done" style="width:35%"></span>
+    </span>
+    <span class="thread__count">41 of 117 settled · 91 drafted</span>
+  </p>
+
+  <section class="desk" style="margin-top:2.5rem">
+
+    <section class="group">
+      <h2>Read</h2>
+      <p class="group__what">Changes what is on screen. Nothing is written.</p>
+      <menu class="acts">
+        <li><button class="act act--quiet" aria-pressed="true">Everything</button></li>
+        <li><button class="act act--quiet">Not translated</button></li>
+        <li><button class="act act--quiet">Not settled</button></li>
+        <li><button class="act act--quiet">Went wrong</button></li>
+      </menu>
+    </section>
+
+    <section class="group">
+      <h2>Translate</h2>
+      <p class="group__what">Sends the untranslated parts to claude-opus-5. Never touches anything you wrote or settled.</p>
+      <menu class="acts">
+        <li><button class="act act--commit">Translate 26 remaining</button></li>
+        <li><button class="act">This page only</button></li>
+      </menu>
+    </section>
+
+    <section class="group">
+      <h2>Export</h2>
+      <p class="group__what">Writes a file. The document here is unchanged.</p>
+      <menu class="acts">
+        <li><button class="act">Word document</button></li>
+        <li><button class="act">Marked-up text</button></li>
+      </menu>
+    </section>
+
+    <section class="group">
+      <h2>Import</h2>
+      <p class="group__what">You will see exactly what changes before anything is written.</p>
+      <menu class="acts">
+        <li><button class="act">Import a translation</button></li>
+      </menu>
+    </section>
+
+    <section class="group">
+      <h2>Housekeeping</h2>
+      <p class="group__what">Settings apply everywhere. The log is for when something misbehaves.</p>
+      <menu class="acts">
+        <li><button class="act">Settings</button></li>
+        <li><button class="act">Save log</button></li>
+        <li><button class="act act--undo">Delete this document</button></li>
+      </menu>
+    </section>
+
+  </section>
+</main>
+
+<!--
+  Notes on this screen.
+
+  The old header put nine identical buttons in one row: filter, translate,
+  cancel, export, export, import, settings, projects, undo. Same size, same
+  outline, same weight — so nothing told you that one of them spends money and
+  another one only changes a filter.
+
+  They are grouped here by what they do to your work, and each group says so in a
+  line of plain text. Within a group the ranking is visible: "Translate 26
+  remaining" is the only filled control on the screen and it names its own
+  consequence. Filters are plain words, because they write nothing. Deleting is
+  the only thing in red, and it sits alone at the bottom.
+
+  Progress is a thread, not a bar in a box: the darker line is settled work, the
+  pale one behind it is drafted. The numbers say the same thing in words, so the
+  colours carry nothing on their own.
+-->
+
+</body>
+</html>

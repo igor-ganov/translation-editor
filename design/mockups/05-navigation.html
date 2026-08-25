@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Finding your way</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  /* Contents, set as a table of contents is: leaders from title to folio. */
+  .contents { list-style: none; margin: 0; padding: 0; max-width: 40rem; }
+  .contents li { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.45rem 0; }
+  .contents__lead { flex: 1; border-bottom: 1px dotted var(--rule); transform: translateY(-0.25em); }
+  .contents__folio { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  .contents__title { font-family: var(--serif); }
+  .contents li[aria-current] .contents__title { font-weight: 600; }
+  .contents li[aria-current] .contents__folio { color: var(--ink); font-weight: 600; }
+  .contents__state { font-size: 0.75rem; color: var(--ink-faint); }
+  .jump { display: flex; align-items: baseline; gap: 0.75rem; margin-top: 2rem; }
+  .jump input { width: 4rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="02-spread.html">Back to page 3</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">14 pages</span>
+</header>
+
+<main class="page">
+  <h1>Where you are, and where the work is</h1>
+  <p class="aside">
+    Pages hold about a screenful each. Nothing is hidden behind a scroll —
+    if a page is not finished, it says so here.
+  </p>
+
+  <ol class="contents" style="margin-top:2rem">
+    <li><span class="contents__title">Eccesso di capitale e sovrappopolazione</span><span class="contents__lead"></span><span class="contents__state">finished</span><span class="contents__folio">1</span></li>
+    <li><span class="contents__title">Karl Marx · L’epoca dell’automazione</span><span class="contents__lead"></span><span class="contents__state">finished</span><span class="contents__folio">2</span></li>
+    <li aria-current="page"><span class="contents__title">Il paradosso fondamentale</span><span class="contents__lead"></span><span class="contents__state">2 of 9 settled</span><span class="contents__folio">3</span></li>
+    <li><span class="contents__title">La caduta del saggio di profitto</span><span class="contents__lead"></span><span class="contents__state">drafted, none settled</span><span class="contents__folio">4</span></li>
+    <li><span class="contents__title">Crediti e bolle</span><span class="contents__lead"></span><span class="contents__state">untouched</span><span class="contents__folio">5</span></li>
+    <li><span class="contents__title">Distruzione dei valori</span><span class="contents__lead"></span><span class="contents__state">untouched</span><span class="contents__folio">6</span></li>
+  </ol>
+
+  <p class="jump">
+    <label class="field" style="margin:0">
+      <span class="field__name">Turn to page</span>
+      <span class="field__box"><input type="number" value="3" min="1" max="14" inputmode="numeric"></span>
+    </label>
+    <button class="act">Go</button>
+    <button class="act">Next page needing work</button>
+  </p>
+
+  <p class="aside" style="margin-top:2.5rem; color:var(--ink-faint)">
+    Closing the app leaves a bookmark. Opening it again puts you back on this page,
+    at the segment you were reading — not at the top, and not at the end.
+  </p>
+</main>
+
+<!--
+  Notes on this screen.
+
+  This is the answer to "the navigation is anyone's guess". A document has
+  contents, like a book: titles on the left, folios on the right, dot leaders
+  between them. The page you are on is bold and marked aria-current.
+
+  Each line says what is left to do on that page, so the contents double as the
+  progress view. That removes a whole separate screen.
+
+  "Next page needing work" replaces hunting: it is the only navigation command
+  worth automating, and it is a plain outline because it only moves the view.
+
+  The last line is a promise about the bookmark bug — jumping to the end of the
+  document after an unrelated event. A page number is remembered, not a pixel
+  offset, so it survives rotation, a font-size change and a different device.
+-->
+
+</body>
+</html>

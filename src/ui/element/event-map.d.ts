@@ -33,6 +33,7 @@ declare global {
     'te-next-unapproved': CustomEvent<Record<string, never>>
     'te-undo': CustomEvent<Record<string, never>>
     'te-export-log': CustomEvent<Record<string, never>>
+    'te-dismiss-notice': CustomEvent<Record<string, never>>
     'te-open-settings': CustomEvent<Record<string, never>>
     'te-close-project': CustomEvent<Record<string, never>>
     'te-scroll-to': CustomEvent<Segment>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translation Editor · design</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  .plates { list-style: none; margin: 2rem 0 0; padding: 0; max-width: 44rem; }
+  .plates li { border-bottom: 1px solid var(--rule); }
+  .plates li:first-child { border-top: 1px solid var(--rule); }
+  .plates a { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.9rem 0; text-decoration: none; color: inherit; }
+  .plates a:hover .plate__name { border-bottom-color: var(--ink); }
+  .plate__no { font-variant-numeric: tabular-nums; color: var(--ink-faint); width: 1.5rem; }
+  .plate__name { font-family: var(--serif); font-size: 1.0625rem; border-bottom: 1px solid transparent; }
+  .plate__why { margin-left: auto; font-size: 0.8125rem; color: var(--ink-faint); text-align: right; max-width: 20rem; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <span class="spine__work">Translation Editor</span>
+  <span class="spine__where">design, first pass</span>
+</header>
+
+<main class="page">
+  <h1>A translation editor that behaves like a book</h1>
+
+  <p class="aside">
+    Three rules everything else follows from. Source text is set like a printed page and the
+    translation sits beside it in the same face and rhythm, so the eye compares like with
+    like. Controls are ranked by what they cost, not by how often they are used: one filled
+    control per screen, and it commits something. Every outline is drawn rather than printed,
+    so the thing reads as marked-up paper and not as a form.
+  </p>
+
+  <ol class="plates">
+    <li><a href="01-library.html"><span class="plate__no">1</span><span class="plate__name">The shelf</span><span class="plate__why">Documents as spines, not cards</span></a></li>
+    <li><a href="02-spread.html"><span class="plate__no">2</span><span class="plate__name">The spread</span><span class="plate__why">Reading and writing, side by side</span></a></li>
+    <li><a href="03-phone.html"><span class="plate__no">3</span><span class="plate__name">On a phone</span><span class="plate__why">One column, thumb on the page turner</span></a></li>
+    <li><a href="04-paragraph.html"><span class="plate__no">4</span><span class="plate__name">The paragraph rules</span><span class="plate__why">The one rule the app turns on</span></a></li>
+    <li><a href="05-navigation.html"><span class="plate__no">5</span><span class="plate__name">Contents</span><span class="plate__why">Where you are, and what is left</span></a></li>
+    <li><a href="06-desk.html"><span class="plate__no">6</span><span class="plate__name">The desk</span><span class="plate__why">Nine identical buttons, ranked and grouped</span></a></li>
+    <li><a href="07-translating.html"><span class="plate__no">7</span><span class="plate__name">While it translates</span><span class="plate__why">Keep working; failures stay on the page</span></a></li>
+    <li><a href="08-import.html"><span class="plate__no">8</span><span class="plate__name">Bringing a translation back</span><span class="plate__why">The one screen that stops and asks</span></a></li>
+    <li><a href="09-settings.html"><span class="plate__no">9</span><span class="plate__name">Settings</span><span class="plate__why">Only the fields that service uses</span></a></li>
+    <li><a href="10-trouble.html"><span class="plate__no">10</span><span class="plate__name">The record</span><span class="plate__why">For when it misbehaves elsewhere</span></a></li>
+    <li><a href="11-boundaries.html"><span class="plate__no">11</span><span class="plate__name">A break in the wrong place</span><span class="plate__why">A proof-reader's mark, not a widget</span></a></li>
+    <li><a href="12-pagination.html"><span class="plate__no">12</span><span class="plate__name">How pages work</span><span class="plate__why">The rules behind the change</span></a></li>
+  </ol>
+
+  <h2 style="margin-top:3rem">What was wrong before</h2>
+  <p class="aside">
+    Nine buttons in a row, identical in size and weight, so nothing said which one spends
+    money and which one changes a filter. No sense of place: one endless list, no page, no
+    contents, and a bookmark stored as a pixel offset that threw you to the end of the
+    document whenever anything redrew. And a form-like surface — boxes, bars, badges — for
+    work that is entirely about reading and writing prose.
+  </p>
+
+  <h2>What is deliberately absent</h2>
+  <p class="aside">
+    There are no cards, no gradients, no icons standing in for words. Messages stay on the
+    page until dismissed rather than fading out mid-sentence, and nothing pretends to be text
+    that has not arrived yet. The single animation is a rule inked in beneath the line being
+    translated; it runs once, and it stops when that line comes back.
+  </p>
+</main>
+
+</body>
+</html>

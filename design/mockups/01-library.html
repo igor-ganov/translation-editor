@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 · Library</title>
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+
+<header class="spine">
+  <span class="spine__work">Translation Editor</span>
+  <span class="spine__where">3 works</span>
+</header>
+
+<main class="page">
+  <h1>Your documents</h1>
+  <p class="aside">
+    Pick up where you left off, or bring in something new. Nothing here is uploaded anywhere —
+    the documents and their translations sit on this device.
+  </p>
+
+  <ul class="shelf" style="margin-top: 2rem">
+    <li>
+      <button class="shelf__row">
+        <span>
+          <span class="shelf__title">Eccesso di capitale e sovrappopolazione</span>
+          <small class="shelf__sub">Italian into Russian · 117 sentences · 41 settled</small>
+        </span>
+        <span class="shelf__meta">yesterday</span>
+      </button>
+    </li>
+    <li>
+      <button class="shelf__row">
+        <span>
+          <span class="shelf__title">The Silent Observer</span>
+          <small class="shelf__sub">English into Russian · 8 sentences · finished</small>
+        </span>
+        <span class="shelf__meta">12 March</span>
+      </button>
+    </li>
+    <li>
+      <button class="shelf__row">
+        <span>
+          <span class="shelf__title">Contratto di locazione</span>
+          <small class="shelf__sub">Italian into Russian · 63 sentences · not started</small>
+        </span>
+        <span class="shelf__meta">3 March</span>
+      </button>
+    </li>
+  </ul>
+
+  <menu class="acts" style="margin-top: 2.5rem">
+    <li><button class="act act--commit">Open a document</button></li>
+    <li><button class="act">Settings</button></li>
+    <li><button class="act">Save log</button></li>
+  </menu>
+
+  <p class="aside" style="margin-top:3rem; color:var(--ink-faint)">
+    Deleting a document removes its translation with it. Export first.
+  </p>
+</main>
+
+<!--
+  Notes on this screen.
+
+  The list is a shelf, not a grid of cards: a document is a spine you read along,
+  and the eye scans a column of titles far faster than a field of boxes.
+
+  Three commands, three weights. Opening a document is the only thing anyone came
+  here to do, so it is the filled one. Settings and Save log are outlines —
+  reversible, occasional. Nothing is an icon; an icon here would only be a
+  smaller, vaguer word.
+
+  Deleting lives inside a document rather than on this list, so a mis-tap on a
+  phone cannot destroy work.
+-->
+
+</body>
+</html>

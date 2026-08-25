@@ -14,16 +14,6 @@ export const shellStyles = css`
     display: flex;
     flex-direction: column;
   }
-  .notice {
-    margin: 0;
-    padding: var(--te-space-2) var(--te-space-3);
-    background: var(--te-surface-raised);
-    border-bottom: 1px solid var(--te-border);
-    font-size: 0.875rem;
-  }
-  .notice.error {
-    color: var(--te-state-failed);
-  }
   .working {
     padding: var(--te-space-2) var(--te-space-3);
     font-size: 0.875rem;

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8 · Bringing a translation back</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  .tally { display: grid; grid-template-columns: auto 1fr; gap: 0.4em 1rem; margin: 0 0 1.5rem; }
+  .tally dt { color: var(--ink-soft); }
+  .tally dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .tally dd b { font-weight: 600; }
+  .caution { color: var(--mark-trouble); }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="06-desk.html">Desk</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+  <h1>What this file would change</h1>
+  <p class="aside">
+    From <em>Eccesso-di-capitale.translation.tmarkup.txt</em>, edited 20 minutes ago.
+  </p>
+
+  <section class="slip">
+    <dl class="tally">
+      <dt>Translations it adds</dt><dd><b>63</b></dd>
+      <dt>Translations it changes</dt><dd><b>12</b></dd>
+      <dt>Left exactly as they are</dt><dd>42</dd>
+      <dt>Ids this document does not have</dt><dd>0</dd>
+      <dt>Segments the file says nothing about</dt><dd>0</dd>
+      <dt class="caution">Settled work it would unsettle</dt><dd class="caution"><b>4</b></dd>
+    </dl>
+
+    <p class="aside" style="margin-bottom:1.5rem">
+      Those four were checked and settled by you. Changing the text underneath them
+      means they need checking again, so they go back to unsettled.
+    </p>
+
+    <menu class="acts">
+      <li><button class="act act--commit">Bring it in</button></li>
+      <li><button class="act">Leave it alone</button></li>
+    </menu>
+  </section>
+
+  <p class="aside" style="margin-top:2rem">
+    One step, one undo. If it lands badly, <em>Undo</em> puts the document back exactly as it was.
+  </p>
+</main>
+
+<!--
+  Notes on this screen.
+
+  This is the most destructive thing in the application, so it is the one place
+  that stops and asks. It is a slip of paper laid on the page rather than a modal
+  over a dimmed screen: no trapping, no blur, the document still behind it.
+
+  The tally is a table, not prose, because these are quantities and the eye
+  compares them down a column. Only the number that costs you something is
+  coloured — the four settled segments — and a sentence underneath says why in
+  plain words, because a red number on its own explains nothing.
+
+  "Bring it in" is filled: it is the only irreversible-feeling act here.
+  "Leave it alone" is an outline beside it, the same size, not hidden away as a
+  small grey link — declining should be as easy as accepting.
+-->
+
+</body>
+</html>

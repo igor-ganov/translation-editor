@@ -1,4 +1,5 @@
 import { buildPrompt } from '../build-prompt.js'
+import { outputBudget } from '../output-budget.js'
 import { strictJsonSchema } from '../strict-json-schema.js'
 import { baseUrlOf } from '../base-url-of.js'
 import type { ProviderSpec } from '../provider-spec.js'
@@ -27,7 +28,7 @@ export const openaiSpec: ProviderSpec = {
       headers: headers(config.apiKey),
       body: JSON.stringify({
         model: config.model,
-        max_completion_tokens: 8192,
+        max_completion_tokens: outputBudget(request, 64000),
         messages: [
           { role: 'system', content: prompt.system },
           { role: 'user', content: prompt.user },

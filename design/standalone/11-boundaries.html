@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 · Fixing a bad break</title>
+<style>
+/*
+  A translation editor that behaves like a book.
+
+  Three rules the rest follows from:
+
+  1. Source text is set like a printed page — serif, generous measure, no chrome
+     touching it. The translation sits beside it in the same size and rhythm, so
+     the eye compares like with like.
+  2. Controls are ranked by consequence, not by frequency. One action per screen
+     commits something; it is the only filled one. Everything reversible is an
+     outline. Everything that merely changes the view is a plain word.
+  3. Lines are drawn, not printed. Every outline is roughened, so the interface
+     reads as marked-up paper rather than as a form.
+*/
+
+:root {
+  --paper: #f7f4ec;
+  --paper-deep: #efeade;
+  --paper-edge: #e3dccb;
+  --ink: #211d17;
+  --ink-soft: #5a5347;
+  --ink-faint: #6f6759;
+  --rule: #cfc6b2;
+
+  /*
+    Marginalia. Never the only carrier of meaning — words say it too.
+    Every one of these is measured against the paper at 4.5:1 or better by
+    design/check-contrast.ts. An earlier set was judged by eye and put the
+    marker for 'not translated yet' — the state that matters most in this
+    editor — at 2.8:1.
+  */
+  --mark-untouched: #6b6455;
+  --mark-machine: #4a6fa5;
+  --mark-hand: #8a5a1e;
+  --mark-settled: #3c6b42;
+  --mark-trouble: #a33a2a;
+
+  --measure: 34rem;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --step: 0.5rem;
+  --touch: 2.75rem;
+}
+
+* { box-sizing: border-box; }
+
+/*
+  Paper is light on purpose, and this says so to the browser. Without it a phone
+  in dark mode repaints the background dark and leaves the ink dark with it,
+  which is how these first reached a real screen: black on black.
+*/
+html {
+  color-scheme: light;
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  /* The faintest grain, so the surface is not a flat screen white. */
+  background-image: radial-gradient(circle at 1px 1px, rgba(33, 29, 23, 0.022) 1px, transparent 0);
+  background-size: 4px 4px;
+}
+
+/* ── the spine: where you are, always ─────────────────────────────── */
+
+.spine {
+  display: flex;
+  align-items: baseline;
+  gap: var(--step);
+  padding: calc(var(--step) * 1.5) calc(var(--step) * 2);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+.spine__work {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  font-style: italic;
+}
+.spine__where {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.spine__back {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+.spine__back:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* ── the page ─────────────────────────────────────────────────────── */
+
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: calc(var(--step) * 3) calc(var(--step) * 2) calc(var(--step) * 8);
+}
+
+.leaf {
+  padding: calc(var(--step) * 2) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.leaf:last-of-type { border-bottom: 0; }
+
+.leaf__pair {
+  display: grid;
+  gap: calc(var(--step) * 2);
+}
+@media (min-width: 60rem) {
+  .leaf__pair { grid-template-columns: 1fr 1fr; }
+}
+
+.leaf__source,
+.leaf__target {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  margin: 0;
+  max-width: var(--measure);
+}
+.leaf__source { color: var(--ink-soft); }
+
+.leaf__target[contenteditable] {
+  outline: 0;
+  min-height: 1.62em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  /* A ruled line under the writing, as on paper — not a box around it. */
+  background-image: linear-gradient(transparent calc(100% - 1px), var(--paper-edge) 1px);
+  background-size: 100% 1.62em;
+}
+.leaf__target[contenteditable]:focus {
+  background-image: linear-gradient(transparent calc(100% - 1px), var(--mark-hand) 1px);
+}
+.leaf__target--settled { color: var(--ink); }
+.leaf__target--empty { color: var(--ink-faint); font-style: italic; }
+
+/* ── marginalia: the state of a segment ───────────────────────────── */
+
+.leaf__margin {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--step) * 1.5);
+  margin-top: var(--step);
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+.mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  white-space: nowrap;
+}
+.mark::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateY(-0.05em);
+}
+.mark--untouched { color: var(--mark-untouched); }
+.mark--machine { color: var(--mark-machine); }
+.mark--hand { color: var(--mark-hand); }
+.mark--settled { color: var(--mark-settled); }
+.mark--trouble { color: var(--mark-trouble); }
+
+/* ── controls, ranked by what they cost ───────────────────────────── */
+
+.act {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: var(--touch);
+  padding: 0 calc(var(--step) * 2);
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.act {
+  /* The drawn outline is a positioned pseudo-element, so it paints over the
+     label unless it is pushed behind it. `isolation` keeps that negative index
+     inside the button rather than sending it behind the page. */
+  isolation: isolate;
+}
+.act::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 2px;
+  filter: url(#rough-1);
+  pointer-events: none;
+}
+.act:nth-of-type(2n)::before { filter: url(#rough-2); }
+.act:nth-of-type(3n)::before { filter: url(#rough-3); }
+.act:hover::before { border-color: var(--ink); }
+.act:focus-visible { outline: 2px solid var(--mark-machine); outline-offset: 3px; }
+
+/* The one that commits. There is never more than one on a screen. */
+.act--commit {
+  color: var(--paper);
+  font-weight: 500;
+}
+.act--commit::before {
+  background: var(--ink);
+  border-color: var(--ink);
+  filter: url(#rough-ink);
+}
+.act--commit:hover::before { background: #000; }
+
+/* Changes the view only: a word, underlined like a reference. */
+.act--quiet {
+  min-height: auto;
+  padding: 0.35em 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--rule);
+}
+.act--quiet::before { display: none; }
+.act--quiet:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.act--quiet[aria-pressed='true'] {
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* Destructive, and it looks it. */
+.act--undo { color: var(--mark-trouble); }
+.act--undo::before { border-color: var(--mark-trouble); }
+
+/* A set of commands is a `menu` in HTML; it needs no wrapper element of its own. */
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--step) * 1.5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.acts--spread { justify-content: space-between; }
+
+/* ── the page turner ──────────────────────────────────────────────── */
+
+.turner {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--step);
+  padding: calc(var(--step) * 1.5) calc(var(--step) * 2);
+  padding-bottom: max(calc(var(--step) * 1.5), env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--paper) 70%, rgba(247, 244, 236, 0));
+  border-top: 1px solid var(--rule);
+}
+.turner__folio {
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+.turner__folio b { font-weight: 600; color: var(--ink); }
+
+/* ── progress, as a thread rather than a bar ──────────────────────── */
+
+.thread { display: flex; align-items: center; gap: calc(var(--step) * 1.5); }
+.thread__track {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  background: var(--paper-edge);
+}
+.thread__done { position: absolute; inset-block: 0; left: 0; background: var(--mark-settled); }
+.thread__drafted { position: absolute; inset-block: 0; left: 0; background: var(--mark-machine); opacity: 0.35; }
+.thread__count {
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── typography of headings ───────────────────────────────────────── */
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 var(--step); }
+h1 { font-size: 1.5rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.125rem; }
+h3 { font-size: 1rem; }
+
+.kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 calc(var(--step) * 0.5);
+}
+
+.aside {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+/* ── fields ───────────────────────────────────────────────────────── */
+
+.field { display: block; margin-bottom: calc(var(--step) * 3); max-width: 28rem; }
+.field__name { display: block; font-size: 0.875rem; color: var(--ink-soft); margin-bottom: 0.35em; }
+.field__note { display: block; font-size: 0.8125rem; color: var(--ink-faint); margin-top: 0.4em; }
+.field__box { position: relative; }
+.field__box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--rule);
+  border-radius: 2px;
+  filter: url(#rough-2);
+  pointer-events: none;
+}
+.field input,
+.field select {
+  width: 100%;
+  min-height: var(--touch);
+  padding: 0 calc(var(--step) * 1.5);
+  font: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+.field__box:focus-within::before { border-color: var(--ink); }
+
+/* ── a sheet of paper laid over the page ──────────────────────────── */
+
+.slip {
+  position: relative;
+  max-width: 34rem;
+  margin: calc(var(--step) * 3) 0;
+  padding: calc(var(--step) * 3);
+  background: var(--paper-deep);
+}
+.slip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--ink-soft);
+  filter: url(#rough-3);
+  pointer-events: none;
+}
+.slip dl { margin: 0 0 calc(var(--step) * 2); display: grid; grid-template-columns: 1fr auto; gap: 0.3em 1em; }
+.slip dt { color: var(--ink-soft); font-size: 0.9375rem; }
+.slip dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.shelf { list-style: none; margin: 0; padding: 0; }
+.shelf li { border-bottom: 1px solid var(--rule); }
+.shelf li:first-child { border-top: 1px solid var(--rule); }
+.shelf__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--step);
+  width: 100%;
+  padding: calc(var(--step) * 2) 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.shelf__row:hover .shelf__title { border-bottom-color: var(--ink); }
+.shelf__title {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  border-bottom: 1px solid transparent;
+}
+.shelf__meta { margin-left: auto; font-size: 0.8125rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.shelf__sub { display: block; font-size: 0.8125rem; color: var(--ink-faint); margin-top: 0.3em; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+</style>
+<style>
+  /* Where the app guessed a sentence ended. A proof-reader's mark, not a widget. */
+  .seam {
+    display: inline-block;
+    width: 0;
+    border-left: 2px dashed var(--mark-trouble);
+    height: 1.1em;
+    margin: 0 0.15em;
+    transform: translateY(0.2em);
+  }
+  .caret { color: var(--mark-hand); font-weight: 600; }
+  .before-after { display: grid; gap: 1.25rem; max-width: 40rem; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
+  <!--
+    Border roughening. Applied only to the pseudo-element that draws an outline,
+    never to an element containing text, so letterforms stay crisp while the line
+    around them wanders the way an inked one does.
+
+    Three seeds, so adjacent controls do not repeat the same wobble and give the
+    game away.
+  -->
+  <filter id="rough-1" x="-5%" y="-15%" width="110%" height="130%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="3" seed="7" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="rough-2" x="-5%" y="-15%" width="110%" height="130%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="23" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="rough-3" x="-6%" y="-20%" width="112%" height="140%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="4" seed="41" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- A heavier hand, for the one action that commits something. -->
+  <filter id="rough-ink" x="-6%" y="-20%" width="112%" height="140%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="4" seed="13" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+
+<header class="spine">
+  <a class="spine__back" href="02-spread.html">Back to page 3</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+  <h1>Two sentences that are really one</h1>
+  <p class="aside">
+    The app breaks sentences by the standard rules, which cannot tell an abbreviation
+    from a full stop. Where it guesses wrong, you fix it and it stays fixed.
+  </p>
+
+  <section class="before-after" style="margin-top:2rem">
+
+    <article class="leaf">
+      <p class="leaf__source">Ho visto il Sig.<span class="seam" aria-label="break here"></span> Rossi ieri sera.</p>
+      <p class="leaf__margin">
+        <span class="mark mark--trouble">broken after an abbreviation</span>
+        <button class="act act--quiet">join these two</button>
+      </p>
+    </article>
+
+    <article class="leaf">
+      <p class="leaf__source">Il saggio scende. <span class="caret">|</span> Nessuna riforma lo risolleva.</p>
+      <p class="leaf__margin">
+        <span class="mark mark--untouched">one sentence, and it should be two</span>
+        <button class="act act--quiet">break at the cursor</button>
+      </p>
+    </article>
+
+  </section>
+
+  <p class="slip" style="max-width:34rem">
+    <b>What happens to the translation.</b><br>
+    Joining puts the two translations together, in order, and the joined sentence
+    goes back to unsettled — the text changed, so it needs another look.
+    Breaking gives the first half the existing translation and leaves the second empty.
+    Either way, <em>Undo</em> reverses it in one step.
+  </p>
+
+  <p class="aside" style="margin-top:1.5rem; color:var(--ink-faint)">
+    The original wording is never edited here. Only where one sentence ends and the
+    next begins moves — so the exported document still says exactly what the source said.
+  </p>
+</main>
+
+<footer class="turner">
+  <button class="act">← Previous</button>
+  <span class="turner__folio">page <b>3</b> of 14</span>
+  <button class="act">Next →</button>
+</footer>
+
+<!--
+  Notes on this screen.
+
+  The break itself is shown as a proof-reader's mark in the line — a dashed
+  upright where the app cut — rather than as two boxes with a button between
+  them. It is a correction to a text, so it looks like one.
+
+  Both commands are plain words: each is one tap to undo. The consequence for the
+  translation is stated before you act, on the slip, because that is the part
+  nobody can guess.
+
+  The last line matters more than it looks: the source is never editable. That is
+  what keeps the exported document faithful and the round trip through an
+  external tool verifiable.
+-->
+
+</body>
+</html>

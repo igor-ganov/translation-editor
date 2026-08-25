@@ -1,5 +1,6 @@
 import { Either, Option, Schema } from 'effect'
 import { buildPrompt } from '../build-prompt.js'
+import { outputBudget } from '../output-budget.js'
 import { openApiSchema } from '../open-api-schema.js'
 import { decodeOrMalformed } from '../decode-or-malformed.js'
 import { baseUrlOf } from '../base-url-of.js'
@@ -42,7 +43,7 @@ export const geminiSpec: ProviderSpec = {
         systemInstruction: { parts: [{ text: prompt.system }] },
         contents: [{ role: 'user', parts: [{ text: prompt.user }] }],
         generationConfig: {
-          maxOutputTokens: 8192,
+          maxOutputTokens: outputBudget(request, 32000),
           responseMimeType: 'application/json',
           responseSchema: openApiSchema,
         },

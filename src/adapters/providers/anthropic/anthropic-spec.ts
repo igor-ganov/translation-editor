@@ -1,5 +1,6 @@
 import { Either, Schema } from 'effect'
 import { buildPrompt } from '../build-prompt.js'
+import { outputBudget } from '../output-budget.js'
 import { strictJsonSchema } from '../strict-json-schema.js'
 import { decodeOrMalformed } from '../decode-or-malformed.js'
 import { baseUrlOf } from '../base-url-of.js'
@@ -28,7 +29,7 @@ export const anthropicSpec: ProviderSpec = {
       headers: anthropicHeaders(config.apiKey),
       body: JSON.stringify({
         model: config.model,
-        max_tokens: 8192,
+        max_tokens: outputBudget(request, 64000),
         system: prompt.system,
         tool_choice: { type: 'tool', name: TOOL_NAME },
         tools: [

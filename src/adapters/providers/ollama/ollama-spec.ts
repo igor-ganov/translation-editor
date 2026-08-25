@@ -1,5 +1,6 @@
 import { Either, Schema } from 'effect'
 import { buildPrompt } from '../build-prompt.js'
+import { outputBudget } from '../output-budget.js'
 import { strictJsonSchema } from '../strict-json-schema.js'
 import { decodeOrMalformed } from '../decode-or-malformed.js'
 import { baseUrlOf } from '../base-url-of.js'
@@ -32,7 +33,7 @@ export const ollamaSpec: ProviderSpec = {
         model: config.model,
         stream: false,
         format: strictJsonSchema,
-        options: { num_predict: 8192 },
+        options: { num_predict: outputBudget(request, 8192) },
         messages: [
           { role: 'system', content: prompt.system },
           { role: 'user', content: prompt.user },

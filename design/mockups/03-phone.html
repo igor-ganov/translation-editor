@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · On a phone</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  /* Shown at 360px so the narrow case is judged at its real width. */
+  body { max-width: 360px; margin-inline: auto; border-inline: 1px dashed var(--paper-edge); min-height: 100vh; }
+  .page { padding-inline: 1rem; padding-bottom: 1rem; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="01-library.html">Shelf</a>
+  <span class="spine__where">3 / 14</span>
+</header>
+
+<main class="page">
+  <p class="kicker" style="margin-bottom:1rem">Eccesso di capitale · page 3</p>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">Nell’epoca dell’automazione, il paradosso resta immutato.</span>
+      <span class="leaf__target leaf__target--settled" contenteditable role="textbox" aria-label="Translation">В эпоху автоматизации парадокс остаётся неизменным.</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--settled">settled</span>
+      <button class="act act--quiet">unsettle</button>
+    </p>
+  </article>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">Il capitale eccedente e la popolazione eccedente convivono.</span>
+      <span class="leaf__target" contenteditable role="textbox" aria-label="Translation">Избыточный капитал и избыточное население сосуществуют.</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--machine">drafted</span>
+      <button class="act act--quiet">settle</button>
+      <button class="act act--quiet">join</button>
+    </p>
+  </article>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">«Senza teoria rivoluzionaria non c’è movimento rivoluzionario», recita l’assioma citato dal Dott. Bianchi.</span>
+      <span class="leaf__target leaf__target--empty" contenteditable role="textbox" aria-label="Translation">nothing yet</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--untouched">untouched</span>
+      <button class="act act--quiet">join</button>
+    </p>
+  </article>
+</main>
+
+<footer class="turner">
+  <button class="act" aria-label="Previous page">←</button>
+  <span class="turner__folio"><b>3</b> / 14</span>
+  <button class="act" aria-label="Next page">→</button>
+</footer>
+
+<!--
+  Notes on this screen.
+
+  Same page, one column. Source above, translation below, in that order, because
+  you read the original and then write under it — the same order as on paper.
+
+  Nothing is hidden behind a hamburger. The page turner is fixed at the bottom
+  where a thumb already rests, and the two arrows are the largest targets on
+  screen; everything else on this page is reading matter.
+
+  The margin words shorten but do not turn into icons: "drafted", "settle",
+  "join". A phone has less room for words, which is a reason to use fewer of
+  them, not a reason to replace them with pictures nobody can read.
+-->
+
+</body>
+</html>

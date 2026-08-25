@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 · Fixing a bad break</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  /* Where the app guessed a sentence ended. A proof-reader's mark, not a widget. */
+  .seam {
+    display: inline-block;
+    width: 0;
+    border-left: 2px dashed var(--mark-trouble);
+    height: 1.1em;
+    margin: 0 0.15em;
+    transform: translateY(0.2em);
+  }
+  .caret { color: var(--mark-hand); font-weight: 600; }
+  .before-after { display: grid; gap: 1.25rem; max-width: 40rem; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="02-spread.html">Back to page 3</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+  <h1>Two sentences that are really one</h1>
+  <p class="aside">
+    The app breaks sentences by the standard rules, which cannot tell an abbreviation
+    from a full stop. Where it guesses wrong, you fix it and it stays fixed.
+  </p>
+
+  <section class="before-after" style="margin-top:2rem">
+
+    <article class="leaf">
+      <p class="leaf__source">Ho visto il Sig.<span class="seam" aria-label="break here"></span> Rossi ieri sera.</p>
+      <p class="leaf__margin">
+        <span class="mark mark--trouble">broken after an abbreviation</span>
+        <button class="act act--quiet">join these two</button>
+      </p>
+    </article>
+
+    <article class="leaf">
+      <p class="leaf__source">Il saggio scende. <span class="caret">|</span> Nessuna riforma lo risolleva.</p>
+      <p class="leaf__margin">
+        <span class="mark mark--untouched">one sentence, and it should be two</span>
+        <button class="act act--quiet">break at the cursor</button>
+      </p>
+    </article>
+
+  </section>
+
+  <p class="slip" style="max-width:34rem">
+    <b>What happens to the translation.</b><br>
+    Joining puts the two translations together, in order, and the joined sentence
+    goes back to unsettled — the text changed, so it needs another look.
+    Breaking gives the first half the existing translation and leaves the second empty.
+    Either way, <em>Undo</em> reverses it in one step.
+  </p>
+
+  <p class="aside" style="margin-top:1.5rem; color:var(--ink-faint)">
+    The original wording is never edited here. Only where one sentence ends and the
+    next begins moves — so the exported document still says exactly what the source said.
+  </p>
+</main>
+
+<footer class="turner">
+  <button class="act">← Previous</button>
+  <span class="turner__folio">page <b>3</b> of 14</span>
+  <button class="act">Next →</button>
+</footer>
+
+<!--
+  Notes on this screen.
+
+  The break itself is shown as a proof-reader's mark in the line — a dashed
+  upright where the app cut — rather than as two boxes with a button between
+  them. It is a correction to a text, so it looks like one.
+
+  Both commands are plain words: each is one tap to undo. The consequence for the
+  translation is stated before you act, on the slip, because that is the part
+  nobody can guess.
+
+  The last line matters more than it looks: the source is never editable. That is
+  what keeps the exported document faithful and the round trip through an
+  external tool verifiable.
+-->
+
+</body>
+</html>

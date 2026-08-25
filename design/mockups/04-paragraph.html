@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 · A paragraph that overrides its sentences</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  /* The paragraph reading rules the sentences beneath it, so it is set apart
+     the way a block quotation is: indented, with a rule down its left edge. */
+  .whole { position: relative; padding-left: calc(var(--step) * 3); margin: calc(var(--step) * 2) 0; }
+  .whole::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--mark-hand);
+    filter: url(rough.svg#rough-3);
+  }
+  .sentences--ruled { opacity: 0.5; }
+  .sentences--ruled .leaf__target { pointer-events: none; }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="02-spread.html">Back</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+
+  <section class="whole">
+    <p class="leaf__pair">
+      <span class="leaf__source">Nell’epoca dell’automazione, il paradosso resta immutato. Il capitale eccedente e la popolazione eccedente convivono.</span>
+      <span class="leaf__target leaf__target--settled" contenteditable role="textbox" aria-label="Whole-paragraph translation">Парадокс автоматизации всё тот же: избыток капитала уживается с избытком людей.</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--hand">yours, and it stands for the whole paragraph</span>
+      <button class="act act--quiet">settle</button>
+    </p>
+    <p class="aside" style="margin-top:1rem">
+      Written here, one line replaces the sentences below. Useful when the two languages
+      break the thought differently and a sentence-by-sentence rendering reads badly.
+    </p>
+    <menu class="acts" style="margin-top:1rem">
+      <li><button class="act">Go back to the sentences</button></li>
+    </menu>
+  </section>
+
+  <section class="sentences--ruled">
+
+    <article class="leaf">
+      <p class="leaf__pair">
+        <span class="leaf__source">Nell’epoca dell’automazione, il paradosso resta immutato.</span>
+        <span class="leaf__target">В эпоху автоматизации парадокс остаётся неизменным.</span>
+      </p>
+      <p class="leaf__margin"><span class="mark mark--machine">drafted · not in use</span></p>
+    </article>
+
+    <article class="leaf">
+      <p class="leaf__pair">
+        <span class="leaf__source">Il capitale eccedente e la popolazione eccedente convivono.</span>
+        <span class="leaf__target">Избыточный капитал и избыточное население сосуществуют.</span>
+      </p>
+      <p class="leaf__margin"><span class="mark mark--machine">drafted · not in use</span></p>
+    </article>
+  </section>
+
+</main>
+
+<!--
+  Notes on this screen.
+
+  This is the one rule the whole application turns on, so it gets a screen of its
+  own rather than a badge.
+
+  A paragraph translation is set apart the way a block quotation is: indented,
+  with an inked rule down its left edge. The sentences it supersedes stay
+  visible and stay legible — they are dimmed, not hidden — because the point is
+  that they are kept. "Go back to the sentences" is an outline, not a plain word:
+  it changes which text the document exports, so it deserves more weight than
+  "settle" but is still reversible in one tap.
+
+  The words in the margin say what is happening in a sentence — "yours, and it
+  stands for the whole paragraph", "drafted · not in use". No badge, no icon, no
+  legend to learn.
+-->
+
+</body>
+</html>

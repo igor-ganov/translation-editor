@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9 · Settings</title>
+<link rel="stylesheet" href="paper.css">
+<style>
+  .colophon { max-width: 32rem; }
+  .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.75rem; align-items: end; max-width: 28rem; }
+  .pair__into { padding-bottom: 0.85rem; color: var(--ink-faint); font-size: 0.875rem; }
+  .verdict { margin-top: 0.75rem; font-size: 0.875rem; }
+  .verdict--good { color: var(--mark-settled); }
+  .verdict--bad { color: var(--mark-trouble); }
+</style>
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="01-library.html">Shelf</a>
+  <span class="spine__work">Settings</span>
+</header>
+
+<main class="page colophon">
+  <h1>Settings</h1>
+  <p class="aside">
+    Your key, your account, your bill. It is kept in this app's private storage and
+    goes nowhere except to the service you pick.
+  </p>
+
+  <section style="margin-top:2rem">
+    <label class="field">
+      <span class="field__name">Service</span>
+      <span class="field__box">
+        <select>
+          <option>Anthropic</option>
+          <option>OpenAI</option>
+          <option>Google Gemini</option>
+          <option>Ollama, on this network</option>
+          <option>llama.cpp, on this network</option>
+        </select>
+      </span>
+    </label>
+
+    <label class="field">
+      <span class="field__name">Model</span>
+      <span class="field__box"><input value="claude-opus-5"></span>
+    </label>
+
+    <label class="field">
+      <span class="field__name">Key</span>
+      <span class="field__box"><input type="password" value="................................" autocomplete="off"></span>
+      <small class="field__note">Only Anthropic ever sees this.</small>
+    </label>
+
+    <p class="verdict verdict--good">Answered. 10 models available.</p>
+
+    <menu class="acts" style="margin: 1.5rem 0 3rem">
+      <li><button class="act">Check it works</button></li>
+    </menu>
+  </section>
+
+  <section>
+    <h2>Languages</h2>
+    <p class="aside">Used for new documents. An open document keeps the pair it was made with.</p>
+    <p class="pair" style="margin-top:1rem">
+      <label class="field" style="margin:0">
+        <span class="field__name">From</span>
+        <span class="field__box"><select><option>Italian</option><option>English</option><option>Russian</option></select></span>
+      </label>
+      <span class="pair__into">into</span>
+      <label class="field" style="margin:0">
+        <span class="field__name">To</span>
+        <span class="field__box"><select><option>Russian</option><option>English</option><option>Italian</option></select></span>
+      </label>
+    </p>
+  </section>
+
+  <menu class="acts" style="margin-top:3rem">
+    <li><button class="act act--commit">Save</button></li>
+    <li><button class="act">Discard</button></li>
+  </menu>
+</main>
+
+<!--
+  Notes on this screen.
+
+  Only the fields the chosen service actually uses are on screen. Picking
+  Anthropic shows a key and no address; picking Ollama shows an address and no
+  key, because Ollama has no authentication at all and asking for a key there is
+  worse than clutter — it implies one is needed.
+
+  The result of "Check it works" is a sentence in place, under the button that
+  caused it, and it stays there. Not a toast that vanishes before it is read.
+
+  "From ... into ..." is laid out as the sentence it is, so the direction of
+  translation cannot be misread — the commonest and most expensive mistake on
+  this screen.
+
+  The old screen said "Base URL (local providers)" to somebody using Anthropic.
+  That is what this whole screen is a correction of.
+-->
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 · The spread</title>
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+
+<header class="spine">
+  <a class="spine__back" href="01-library.html">Shelf</a>
+  <span class="spine__work">Eccesso di capitale e sovrappopolazione</span>
+  <span class="spine__where">page 3 of 14</span>
+</header>
+
+<main class="page">
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">Nell’epoca dell’automazione, il paradosso resta immutato.</span>
+      <span class="leaf__target leaf__target--settled" contenteditable role="textbox" aria-label="Translation">В эпоху автоматизации парадокс остаётся неизменным.</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--settled">settled</span>
+      <button class="act act--quiet">unsettle</button>
+      <button class="act act--quiet">join with next</button>
+    </p>
+  </article>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">Il capitale eccedente e la popolazione eccedente convivono.</span>
+      <span class="leaf__target" contenteditable role="textbox" aria-label="Translation">Избыточный капитал и избыточное население сосуществуют.</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--machine">drafted by claude-opus-5</span>
+      <button class="act act--quiet">settle</button>
+      <button class="act act--quiet">join with next</button>
+    </p>
+  </article>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">«Senza teoria rivoluzionaria non c’è movimento rivoluzionario», recita l’assioma citato dal Dott. Bianchi.</span>
+      <span class="leaf__target leaf__target--empty" contenteditable role="textbox" aria-label="Translation">nothing yet</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--untouched">untouched</span>
+      <button class="act act--quiet">join with next</button>
+    </p>
+  </article>
+
+  <article class="leaf">
+    <p class="leaf__pair">
+      <span class="leaf__source">Il pensiero corrente attribuisce le crisi a “shock esterni”.</span>
+      <span class="leaf__target leaf__target--settled" contenteditable role="textbox" aria-label="Translation">Расхожая мысль списывает кризисы на «внешние шоки».</span>
+    </p>
+    <p class="leaf__margin">
+      <span class="mark mark--hand">yours</span>
+      <button class="act act--quiet">settle</button>
+      <button class="act act--quiet">join with next</button>
+    </p>
+  </article>
+
+</main>
+
+<footer class="turner">
+  <button class="act">← Previous</button>
+  <span class="turner__folio">page <b>3</b> of 14</span>
+  <button class="act">Next →</button>
+</footer>
+
+<!--
+  Notes on this screen.
+
+  The complaint this answers: an endless scroll that loses your place. There is
+  no scroll to lose now — the document is cut into pages of roughly a screenful,
+  and the page number is on the spine and under your thumb. Coming back opens the
+  page you left, not the top and not the end.
+
+  Source and translation are set in the same face at the same size, because the
+  job is comparing them. The translation has a ruled line under it rather than a
+  box around it: you are writing on a page, not filling in a form.
+
+  The state of a segment is a word in the margin — "settled", "yours", "drafted
+  by claude-opus-5". The dot beside it is decoration; remove all colour and the
+  screen still reads.
+
+  Per-segment commands are plain underlined words, because they change one line
+  and undo in one tap. Nothing here is filled: nothing on this screen is
+  irreversible.
+-->
+
+</body>
+</html>

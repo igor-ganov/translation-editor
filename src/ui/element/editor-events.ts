@@ -9,6 +9,7 @@ export const editorEvents = {
   nextUnapproved: 'te-next-unapproved',
   undo: 'te-undo',
   exportLog: 'te-export-log',
+  dismissNotice: 'te-dismiss-notice',
   openSettings: 'te-open-settings',
   closeProject: 'te-close-project',
   cursorMove: 'te-cursor-move',
