@@ -57,26 +57,30 @@ done
 [ -n "$webview" ] || { echo "no WebView was ever attached"; bash "$(dirname "$0")/android-diagnose.sh" "$PACKAGE"; exit 1; }
 
 say "wait for the frontend to report itself ready"
-# The interface is built from shadow roots, which the accessibility tree does not
-# descend into — so a WebView on screen proves the native shell came up, and only
-# the app's own readiness line proves the frontend actually ran. It reaches
-# logcat because the logger prints, and Tauri forwards console output there.
+# A WebView on screen only proves the native shell came up. The interface itself
+# lives in shadow roots, which the accessibility tree does not descend into, and
+# console output does not reach logcat in a release build — so the app sets its
+# document title on boot, which Android surfaces as the WebView's accessibility
+# name. That title is the only honest evidence the frontend ran.
 ready=""
 for _ in $(seq 1 45); do
-  adb logcat -d | grep -aq "\[te\].*shell ready" && { ready="yes"; break; }
+  adb exec-out uiautomator dump /dev/tty > /tmp/ui.xml 2>/dev/null || true
+  grep -q "Translation Editor .* ready" /tmp/ui.xml 2>/dev/null && { ready="yes"; break; }
   sleep 2
 done
 
 if [ -z "$ready" ]; then
   echo "the frontend never reported itself ready"
-  echo "--- anything the app did say ---"
-  adb logcat -d | grep -a "\[te\]" | tail -20 || echo "(the app logged nothing at all)"
+  echo "--- what the WebView node says instead ---"
+  grep -o 'class="android.webkit.WebView"[^/]*text="[^"]*"' /tmp/ui.xml 2>/dev/null | head -3 \
+    || grep -o 'text="[^"]*"' /tmp/ui.xml 2>/dev/null | head -10 \
+    || echo "(no view hierarchy was captured)"
   bash "$(dirname "$0")/android-diagnose.sh" "$PACKAGE"
   exit 1
 fi
 
-say "what the app logged"
-adb logcat -d | grep -a "\[te\]" | tail -20
+say "the title the app set"
+grep -o 'text="Translation Editor [^"]*"' /tmp/ui.xml | head -1
 
 say "crash check"
 if adb logcat -d | grep -qE "FATAL EXCEPTION|E AndroidRuntime"; then
