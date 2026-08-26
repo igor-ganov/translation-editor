@@ -32,10 +32,10 @@ export const renderLeaf = (host: HTMLElement, row: SentenceRow, mode: LeafEditin
         <span class="leaf__source">${row.source}</span>
         ${renderTarget(host, writing, mode.editing)}
       </p>
-      <p class="leaf__margin">
+      <p class="leaf__state">
         ${renderMark(status, row.translation, row.approved)} ${renderFailureNote(row.translation)}
-        ${renderLeafActs(host, row, mode)}
       </p>
+      <menu class="leaf__commands">${renderLeafActs(host, row, mode)}</menu>
     </article>
   `
 }

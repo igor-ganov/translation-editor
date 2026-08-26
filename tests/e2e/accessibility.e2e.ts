@@ -73,6 +73,29 @@ test.describe('accessibility', () => {
     await expect(row.locator('p.leaf__target')).toHaveText('a draft')
   })
 
+  test('keeps what a sentence is apart from what can be done to it', async ({ page }) => {
+    // Both shared one line at one weight, so a reader could not tell the fact
+    // from the things they could press.
+    await openDocument(page)
+    const row = sentenceRows(page).first()
+    await expect(row.locator('.leaf__state .act')).toHaveCount(0)
+    await expect(row.locator('.leaf__commands .mark')).toHaveCount(0)
+    await expect(row.locator('.leaf__commands button')).toHaveCount(4)
+  })
+
+  test('gives every command a drawn hint and a word, never a glyph on its own', async ({ page }) => {
+    await openDocument(page)
+    const commands = sentenceRows(page).first().locator('.leaf__commands button')
+    const named = await commands.evaluateAll((buttons) =>
+      buttons.map((button) => ({
+        icons: button.querySelectorAll('svg').length,
+        words: button.textContent.trim().length,
+      })),
+    )
+    expect(named).toHaveLength(4)
+    expect(named.every((command) => command.icons === 1 && command.words > 0)).toBe(true)
+  })
+
   test('marks the fold control with its expanded state', async ({ page }) => {
     await openDocument(page)
     const toggle = blockRows(page).first().getByRole('button', { name: /sentences/ })

@@ -40,13 +40,5 @@ export const leafStyles = css`
     color: var(--ink-soft);
   }
 
-  .leaf__margin {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: calc(var(--step) * 2.5) calc(var(--step) * 2.5);
-    margin: calc(var(--step) * 1.5) 0 0;
-    font-size: 0.8125rem;
-    color: var(--ink-faint);
-  }
+  /* The state line and the command bar are set by command-bar-styles. */
 `

@@ -1,4 +1,5 @@
 import { boxStyles } from './styles/box-styles.js'
+import { commandBarStyles } from './styles/command-bar-styles.js'
 import { css } from 'lit'
 import { wholeStyles } from './styles/whole-styles.js'
 import { leafStyles } from './styles/leaf-styles.js'
@@ -19,6 +20,7 @@ export const blockStyles = [
   `,
   wholeStyles,
   leafStyles,
+  commandBarStyles,
   writingStyles,
   markStyles,
   paperTypeStyles,

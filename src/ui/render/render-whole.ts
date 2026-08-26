@@ -33,9 +33,8 @@ export const renderWhole = (host: HTMLElement, row: BlockRow, mode: LeafEditing)
           () => renderTarget(host, writing, mode.editing),
         )}
       </p>
-      <p class="leaf__margin">
-        ${renderMark(status, row.translation, row.approved)} ${renderWholeActs(host, row, mode)}
-      </p>
+      <p class="leaf__state">${renderMark(status, row.translation, row.approved)}</p>
+      <menu class="leaf__commands">${renderWholeActs(host, row, mode)}</menu>
       ${renderOverrideNote(host, row)}
     </section>
   `
