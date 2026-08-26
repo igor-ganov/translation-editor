@@ -13,6 +13,22 @@ export const field = (row: Locator) => row.locator('textarea')
 export const settle = (row: Locator) => row.getByRole('button', { name: /^(settle|unsettle)$/ })
 export const mark = (row: Locator) => row.locator('.mark')
 
+/** The translation as it is read: text on the page, not a control. */
+export const reading = (row: Locator) => row.locator('p.leaf__target')
+
+/** Editing is entered deliberately, so a test that writes has to open the editor. */
+export const openEditor = async (row: Locator): Promise<Locator> => {
+  await row.getByRole('button', { name: /^(edit|write one for the whole paragraph)$/ }).click()
+  await field(row).waitFor()
+  return field(row)
+}
+
+export const writeIn = async (row: Locator, text: string): Promise<void> => {
+  const box = await openEditor(row)
+  await box.fill(text)
+  await box.blur()
+}
+
 /** The page turner, which is the only navigation on the reading screen. */
 export const turner = (page: Page) => editor(page).locator('.turner')
 export const nextPage = (page: Page) => turner(page).getByRole('button', { name: 'Next page' })

@@ -5,12 +5,13 @@ import {
   blockRows,
   contents,
   editor,
-  field,
   nextPage,
   openContents,
   openFile,
   previousPage,
+  reading,
   sentenceRows,
+  writeIn,
 } from './support/open-document.js'
 
 const folio = (page: Page) => editor(page).locator('.turner__folio')
@@ -84,12 +85,11 @@ test.describe('pages', () => {
     await openLong(page)
     await nextPage(page).click()
     const row = sentenceRows(page).first()
-    await field(row).fill('a translation on page two')
-    await field(row).blur()
+    await writeIn(row, 'a translation on page two')
 
     await page.reload()
     await editor(page).waitFor()
     await expect(folio(page)).toContainText('2 / 3')
-    await expect(field(sentenceRows(page).first())).toHaveValue('a translation on page two')
+    await expect(reading(sentenceRows(page).first())).toHaveText('a translation on page two')
   })
 })

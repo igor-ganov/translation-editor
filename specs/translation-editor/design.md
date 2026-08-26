@@ -272,9 +272,13 @@ This replaces the windowing virtualiser. Measuring the page in paragraphs rather
 
 Each leaf shows exactly one state, driven by an exhaustive `switch` over `TranslationState` plus approval: **untouched**, **drafted**, **your wording**, **settled**, **went wrong**, and — on a paragraph — an inked rule down its left edge while it overrides its sentences (R5.4). Every state is a dot **and a word**; colour never carries meaning alone. A failed segment prints the service's own explanation beside it, wrapped rather than clipped.
 
-### 7.5 Editing (R6.3)
+### 7.5 Reading and writing (R6.3)
 
-`contenteditable` is avoided; each translation is an auto-growing `<textarea>` ruled with a line under the writing rather than boxed. Persist on blur and on a 400 ms idle debounce. Any edit sets `TranslationState.edited` and clears approval (R6.4) — one pure `applyEdit` does both, so the two cannot drift apart. A superseded sentence is `readonly` and dimmed, never hidden or disabled: the point is that it is kept, and it stays readable and focusable.
+A translation is **text on the page** by default, set in the same face, size and measure as the source above it. Editing is entered deliberately, through `edit` in the margin, and turns that one segment into a full-width auto-growing editor ruled like paper. Leaving it commits: on blur, on `Escape`, and on `Ctrl+Enter`, which also settles the segment.
+
+The reason is a bug this replaces. Every translation was a permanently-open one-row `<textarea>` that grew only on `input`, so a translation loaded from storage was shown clipped to its first line while the source beside it flowed over six. Reading is the common case and it should not happen inside a form control; and a paragraph's optional override no longer occupies an empty box on every paragraph in the document.
+
+Which segment is being edited is held by the row element, not by the application: it is not part of the document, so it does not survive a reload or travel to the desk. Any edit sets `TranslationState.edited` and clears approval (R6.4) — one pure `applyEdit` does both, so the two cannot drift apart. A superseded sentence is shown as text and offers no `edit`: it is kept and legible, but it is not what the document will export while the paragraph stands in for it.
 
 ### 7.6 Accessibility (R6.8)
 

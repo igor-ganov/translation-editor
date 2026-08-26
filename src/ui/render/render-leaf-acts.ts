@@ -1,10 +1,12 @@
 import { html } from 'lit'
 import type { SentenceRow } from '../../core/view/types.js'
+import type { LeafEditing } from './leaf-editing.js'
 import { textOf } from '../element/text-of.js'
 import { onSettle } from '../element/on-settle.js'
 import { onSplit } from '../element/on-split.js'
 import { emit } from '../element/emit.js'
 import { segmentEvents } from '../element/segment-events.js'
+import { whenPresent } from './when-present.js'
 
 /** Indexed by `Number(approved)`, which keeps the wording branch-free. */
 const SETTLE_WORDS: readonly string[] = ['settle', 'unsettle']
@@ -15,9 +17,14 @@ const joining = (host: HTMLElement, row: SentenceRow) => () => {
 
 /**
  * The commands in the margin. All of them only rearrange work you already have,
- * so all of them are plain words rather than outlines.
+ * so all of them are plain words rather than outlines. `edit` comes first
+ * because it is the one anyone reaches for most.
  */
-export const renderLeafActs = (host: HTMLElement, row: SentenceRow) => html`
+export const renderLeafActs = (host: HTMLElement, row: SentenceRow, mode: LeafEditing) => html`
+  ${whenPresent(
+    !mode.editing && !row.superseded,
+    () => html`<button type="button" class="act act--quiet" @click=${mode.start}>edit</button>`,
+  )}
   <button
     type="button"
     class="act act--quiet"

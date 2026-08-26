@@ -4,18 +4,16 @@ import {
   blockRows,
   desk,
   editor,
-  field,
   openDesk,
   openDocument,
+  reading,
   sentenceRows,
   settle,
+  writeIn,
 } from './support/open-document.js'
 
-const draft = async (page: Page, index: number, text: string): Promise<void> => {
-  const row = sentenceRows(page).nth(index)
-  await field(row).fill(text)
-  await field(row).blur()
-}
+const draft = async (page: Page, index: number, text: string): Promise<void> =>
+  writeIn(sentenceRows(page).nth(index), text)
 
 test.describe('importing, editing and settling', () => {
   test('imports a .docx and shows every paragraph with its sentences', async ({ page }) => {
@@ -31,6 +29,24 @@ test.describe('importing, editing and settling', () => {
     )
   })
 
+  test('shows a translation as text, in full, rather than clipped to one line', async ({ page }) => {
+    // A translation loaded into a one-line field was shown clipped while the
+    // source beside it flowed over six lines.
+    await openDocument(page)
+    const row = sentenceRows(page).first()
+    const long = 'A rendering long enough to need three lines of its own, which is the ordinary case for prose.'
+    await draft(page, 0, long)
+
+    await expect(reading(row)).toHaveText(long)
+    // One rect per line box, which a block element's own bounding box cannot tell you.
+    const lines = await reading(row).evaluate((element) => {
+      const range = element.ownerDocument.createRange()
+      range.selectNodeContents(element)
+      return range.getClientRects().length
+    })
+    expect(lines).toBeGreaterThan(1)
+  })
+
   test('keeps an edited translation across a reload', async ({ page }) => {
     await openDocument(page)
     await draft(page, 0, 'The Silent Observer, translated')
@@ -39,7 +55,7 @@ test.describe('importing, editing and settling', () => {
 
     await page.reload()
     await editor(page).waitFor()
-    await expect(field(sentenceRows(page).first())).toHaveValue('The Silent Observer, translated')
+    await expect(reading(sentenceRows(page).first())).toHaveText('The Silent Observer, translated')
   })
 
   test('editing unsettles a sentence, because the settled text has changed', async ({ page }) => {

@@ -24,17 +24,19 @@ export const leafStyles = css`
     .leaf__pair {
       grid-template-columns: 1fr 1fr;
     }
+    /* One column while writing, so the editor has the whole width of the page. */
+    .leaf__pair--writing {
+      grid-template-columns: 1fr;
+    }
   }
 
-  .leaf__source,
-  .leaf__target {
+  /* The target is set by writing-styles, which owns both of its states. */
+  .leaf__source {
     font-family: var(--serif);
     font-size: 1.0625rem;
     line-height: 1.62;
     margin: 0;
     max-width: var(--measure);
-  }
-  .leaf__source {
     color: var(--ink-soft);
   }
 

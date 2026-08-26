@@ -3,20 +3,19 @@ import {
   app,
   blockRows,
   chooseFilter,
-  field,
   leaveDesk,
   openDocument,
   runFromDesk,
   sentenceRows,
   settle,
+  writeIn,
 } from './support/open-document.js'
 
 test.describe('moving around the document', () => {
   test('goes to the next sentence still waiting to be settled', async ({ page }) => {
     await openDocument(page)
     const first = sentenceRows(page).first()
-    await field(first).fill('translated')
-    await field(first).blur()
+    await writeIn(first, 'translated')
     await settle(first).click()
 
     await runFromDesk(page, 'Next page needing work')
@@ -33,8 +32,7 @@ test.describe('moving around the document', () => {
   test('filters the view down to untranslated sentences', async ({ page }) => {
     await openDocument(page)
     const first = sentenceRows(page).first()
-    await field(first).fill('translated')
-    await field(first).blur()
+    await writeIn(first, 'translated')
 
     await chooseFilter(page, 'Not translated')
     await expect(sentenceRows(page)).toHaveCount(3)

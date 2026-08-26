@@ -3,11 +3,12 @@ import type { Page } from '@playwright/test'
 import {
   blockRows,
   desk,
-  field,
   openDesk,
   openDocument,
+  reading,
   sentenceRows,
   settle,
+  writeIn,
 } from './support/open-document.js'
 
 const restore = (page: Page) =>
@@ -16,18 +17,11 @@ const restore = (page: Page) =>
 /** The rule the whole application turns on: a paragraph translation wins. */
 test.describe('paragraph translation overriding its sentences', () => {
   const draftSentences = async (page: Page) => {
-    for (const index of [1, 2]) {
-      const row = sentenceRows(page).nth(index)
-      await field(row).fill(`sentence ${String(index)}`)
-      await field(row).blur()
-    }
+    for (const index of [1, 2]) await writeIn(sentenceRows(page).nth(index), `sentence ${String(index)}`)
   }
 
-  const override = async (page: Page) => {
-    const paragraph = blockRows(page).nth(1)
-    await field(paragraph).fill('One restructured paragraph.')
-    await field(paragraph).blur()
-  }
+  const override = async (page: Page) =>
+    writeIn(blockRows(page).nth(1), 'One restructured paragraph.')
 
   test('a paragraph translation marks the paragraph as overriding', async ({ page }) => {
     await openDocument(page)
@@ -45,8 +39,10 @@ test.describe('paragraph translation overriding its sentences', () => {
     await override(page)
 
     const row = sentenceRows(page).nth(1)
-    await expect(field(row)).toHaveAttribute('readonly', '')
-    await expect(field(row)).toHaveValue('sentence 1')
+    // Kept and legible, but no longer offered for editing: it is not what the
+    // document will export while the paragraph stands in for it.
+    await expect(reading(row)).toHaveText('sentence 1')
+    await expect(row.getByRole('button', { name: 'edit' })).toHaveCount(0)
   })
 
   test('removing the paragraph translation brings the sentences back', async ({ page }) => {
@@ -58,8 +54,8 @@ test.describe('paragraph translation overriding its sentences', () => {
     await restore(page).click()
     await expect(blockRows(page).nth(1).locator('.whole--ruling')).toHaveCount(0)
     const row = sentenceRows(page).nth(1)
-    await expect(field(row)).not.toHaveAttribute('readonly', '')
-    await expect(field(row)).toHaveValue('sentence 1')
+    await expect(reading(row)).toHaveText('sentence 1')
+    await expect(row.getByRole('button', { name: 'edit' })).toBeVisible()
   })
 
   test('an overridden paragraph counts as one unit of progress', async ({ page }) => {

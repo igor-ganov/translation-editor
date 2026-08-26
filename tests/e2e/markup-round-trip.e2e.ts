@@ -7,10 +7,11 @@ import {
   app,
   blockRows,
   desk,
-  field,
   openDesk,
   openDocument,
+  reading,
   sentenceRows,
+  writeIn,
 } from './support/open-document.js'
 
 /**
@@ -71,7 +72,7 @@ test.describe('the markup round trip', () => {
     await slip(page).getByRole('button', { name: 'Bring it in' }).click()
     await expect(slip(page)).toHaveCount(0)
     await desk(page).getByRole('button', { name: 'Back to the page' }).click()
-    await expect(field(sentenceRows(page).first())).toHaveValue('The Silent Observer, rendered')
+    await expect(reading(sentenceRows(page).first())).toHaveText('The Silent Observer, rendered')
   })
 
   test('refuses nothing but warns when the file belongs to another document', async ({ page }) => {
@@ -85,8 +86,7 @@ test.describe('the markup round trip', () => {
   test('exports a .docx the browser accepts as a download', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    await field(row).fill('The Silent Observer, rendered')
-    await field(row).blur()
+    await writeIn(row, 'The Silent Observer, rendered')
 
     const started = page.waitForEvent('download')
     await openDesk(page)

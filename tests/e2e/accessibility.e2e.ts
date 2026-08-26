@@ -7,8 +7,10 @@ import {
   mark,
   openDesk,
   openDocument,
+  openEditor,
   sentenceRows,
   settle,
+  writeIn,
 } from './support/open-document.js'
 
 test.describe('accessibility', () => {
@@ -20,10 +22,8 @@ test.describe('accessibility', () => {
 
   test('labels the editing field with the sentence it translates', async ({ page }) => {
     await openDocument(page)
-    await expect(field(sentenceRows(page).nth(1))).toHaveAttribute(
-      'aria-label',
-      'Translation of: Dr. Ellison had waited thirty years.',
-    )
+    const box = await openEditor(sentenceRows(page).nth(1))
+    await expect(box).toHaveAttribute('aria-label', 'Translation of: Dr. Ellison had waited thirty years.')
   })
 
   test('states every segment status in words, not only by colour', async ({ page }) => {
@@ -31,15 +31,15 @@ test.describe('accessibility', () => {
     const row = sentenceRows(page).first()
     await expect(mark(row)).toHaveText('untouched')
 
-    await field(row).fill('a first attempt')
-    await field(row).blur()
+    await writeIn(row, 'a first attempt')
     await expect(mark(row)).toHaveText('your wording')
   })
 
   test('describes the field by its status, so the state is announced with it', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    const describedBy = await field(row).getAttribute('aria-describedby')
+    const box = await openEditor(row)
+    const describedBy = await box.getAttribute('aria-describedby')
     expect(describedBy).toBeTruthy()
     await expect(row.locator(`#${String(describedBy)}`)).toHaveCount(1)
   })
@@ -55,22 +55,22 @@ test.describe('accessibility', () => {
   test('settles and leaves the field from the keyboard alone', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
+    const box = await openEditor(row)
 
-    await field(row).focus()
-    await field(row).fill('a translation')
+    await box.fill('a translation')
     await page.keyboard.press('Control+Enter')
     await expect(settle(row)).toHaveAttribute('aria-pressed', 'true')
-    await expect(field(row)).not.toBeFocused()
+    await expect(field(row)).toHaveCount(0)
   })
 
   test('leaves the field on Escape without losing what was typed', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    await field(row).focus()
-    await field(row).fill('a draft')
+    const box = await openEditor(row)
+    await box.fill('a draft')
     await page.keyboard.press('Escape')
-    await expect(field(row)).not.toBeFocused()
-    await expect(field(row)).toHaveValue('a draft')
+    await expect(field(row)).toHaveCount(0)
+    await expect(row.locator('p.leaf__target')).toHaveText('a draft')
   })
 
   test('marks the fold control with its expanded state', async ({ page }) => {
