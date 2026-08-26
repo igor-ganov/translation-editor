@@ -53,14 +53,16 @@ const run = async (
 ) => {
   const provider = scriptedProvider(script)
   const saved: Project[] = []
+  const reported: string[] = []
   const result = await Effect.runPromise(
     runTranslation({
       provider,
       budgetTokens,
       onBatchDone: (next) => Effect.sync(() => void saved.push(next)),
+      onBatchFailed: (reason) => Effect.sync(() => void reported.push(reason)),
     })(project),
   )
-  return { result, saved, calls: provider.calls.count }
+  return { result, saved, reported, calls: provider.calls.count }
 }
 
 describe('runTranslation', () => {
@@ -91,6 +93,13 @@ describe('runTranslation', () => {
     const { result } = await run(project, ['auth', 'ok'], 1)
     expect(result.entries.get(id('b0.s0'))?.translation.tag).toBe('failed')
     expect(result.entries.get(id('b1.s0'))?.translation.tag).toBe('machine')
+  })
+
+  it('reports why a batch was rejected, in the provider’s own words', async () => {
+    // The gap this closes: a run failed all 44 of its segments and the exported
+    // log said only that it had, with nothing anywhere naming the cause.
+    const { reported } = await run(buildProject({ blocks: [{ text: source }] }), ['auth'])
+    expect(reported).toStrictEqual(['bad key'])
   })
 
   it('rejects a batch where the provider dropped a segment', async () => {

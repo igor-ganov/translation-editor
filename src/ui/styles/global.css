@@ -1,57 +1,57 @@
-/* Design tokens. Mobile-first: every size below is chosen for a 320px-wide viewport
-   and scales up, never the other way round. */
+/*
+  A translation editor that behaves like a book.
+
+  Three rules the rest follows from:
+
+  1. Source text is set like a printed page — serif, generous measure, no chrome
+     touching it. The translation sits beside it in the same size and rhythm, so
+     the eye compares like with like.
+  2. Controls are ranked by consequence, not by frequency. One action per screen
+     commits something; it is the only filled one. Everything reversible is an
+     outline. Everything that merely changes the view is a plain word.
+  3. Lines are drawn, not printed. Every outline wanders the way an inked one
+     does, so the interface reads as marked-up paper rather than as a form.
+
+  Every colour below is measured against the paper by design/check-contrast.ts
+  rather than judged by eye. An earlier set put the marker for "not translated
+  yet" — the state that matters most here — at 2.8:1.
+*/
 :root {
-  --te-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --te-font-reading: Georgia, 'Times New Roman', serif;
+  --paper: #f7f4ec;
+  --paper-deep: #efeade;
+  --paper-edge: #e3dccb;
+  --ink: #211d17;
+  --ink-soft: #5a5347;
+  --ink-faint: #6f6759;
+  --rule: #cfc6b2;
 
-  --te-space-1: 0.25rem;
-  --te-space-2: 0.5rem;
-  --te-space-3: 0.75rem;
-  --te-space-4: 1rem;
-  --te-space-6: 1.5rem;
+  --mark-untouched: #6b6455;
+  --mark-machine: #4a6fa5;
+  --mark-hand: #8a5a1e;
+  --mark-settled: #3c6b42;
+  --mark-trouble: #a33a2a;
 
-  --te-radius: 0.5rem;
-  --te-touch-target: 2.75rem; /* 44px, the minimum comfortable touch size */
+  --measure: 34rem;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --sans: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 
-  --te-surface: #ffffff;
-  --te-surface-sunken: #f4f5f7;
-  --te-surface-raised: #ffffff;
-  --te-border: #d6d9de;
-  --te-text: #16191d;
-  --te-text-muted: #5b6270;
-  --te-accent: #2f5cd8;
-  --te-accent-contrast: #ffffff;
-
-  --te-state-untranslated: #8a8f98;
-  --te-state-machine: #2f5cd8;
-  --te-state-edited: #8a5a00;
-  --te-state-approved: #1c7a45;
-  --te-state-failed: #b3261e;
-  --te-state-override: #6b3fa0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --te-surface: #16191d;
-    --te-surface-sunken: #101317;
-    --te-surface-raised: #1e2228;
-    --te-border: #333941;
-    --te-text: #e8eaed;
-    --te-text-muted: #9aa2af;
-    --te-accent: #7fa0ff;
-    --te-accent-contrast: #0b0d10;
-
-    --te-state-untranslated: #8a8f98;
-    --te-state-machine: #7fa0ff;
-    --te-state-edited: #e0a83c;
-    --te-state-approved: #4ec27f;
-    --te-state-failed: #ff8a80;
-    --te-state-override: #c39bf0;
-  }
+  --step: 0.5rem;
+  --touch: 2.75rem;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/*
+  Paper is light on purpose, and this says so to the browser. Without it a phone
+  in dark mode repaints the background dark and leaves the ink dark with it,
+  which is how the first mockups reached a real screen: black on black.
+*/
+html {
+  color-scheme: light;
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
 }
 
 html,
@@ -63,14 +63,18 @@ body {
 }
 
 body {
-  font-family: var(--te-font);
-  background: var(--te-surface-sunken);
-  color: var(--te-text);
-  -webkit-text-size-adjust: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  /* The faintest grain, so the surface is not a flat screen white. */
+  background-image: radial-gradient(circle at 1px 1px, rgba(33, 29, 23, 0.022) 1px, transparent 0);
+  background-size: 4px 4px;
 }
 
 :focus-visible {
-  outline: 2px solid var(--te-accent);
+  outline: 2px solid var(--mark-machine);
   outline-offset: 2px;
 }
 

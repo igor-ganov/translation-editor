@@ -9,6 +9,6 @@ export const renderRow = (row: EditorRow) => {
     case 'block':
       return html`<te-block-row .row=${row}></te-block-row>`
     case 'sentence':
-      return html`<te-sentence-pair .row=${row}></te-sentence-pair>`
+      return html`<te-sentence-pair .row=${row} ?superseded=${row.superseded}></te-sentence-pair>`
   }
 }

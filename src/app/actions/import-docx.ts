@@ -3,6 +3,7 @@ import type { ProjectId } from '../../core/document/types.js'
 import type { Project } from '../../core/project/types.js'
 import type { LanguagePair } from '../../core/project/types.js'
 import { parseDocx } from '../../adapters/docx/parse-docx.js'
+import { nameDocument } from '../../core/project/name-document.js'
 import { hashBytes } from './hash-bytes.js'
 import type { Platform } from '../platform.js'
 
@@ -23,7 +24,7 @@ export const importDocx =
       Effect.flatMap((source) =>
         Effect.map(hashBytes(bytes), (documentHash): Project => ({
           id: newId(),
-          name,
+          name: nameDocument(name, source),
           documentHash,
           source,
           languages,

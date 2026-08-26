@@ -1,7 +1,23 @@
 import { expect, test } from '@playwright/test'
-import { blockRows, editor, openDocument, sentenceRows } from './support/open-document.js'
+import type { Page } from '@playwright/test'
+import {
+  blockRows,
+  desk,
+  editor,
+  field,
+  openDesk,
+  openDocument,
+  sentenceRows,
+  settle,
+} from './support/open-document.js'
 
-test.describe('importing, editing and approving', () => {
+const draft = async (page: Page, index: number, text: string): Promise<void> => {
+  const row = sentenceRows(page).nth(index)
+  await field(row).fill(text)
+  await field(row).blur()
+}
+
+test.describe('importing, editing and settling', () => {
   test('imports a .docx and shows every paragraph with its sentences', async ({ page }) => {
     await openDocument(page)
     await expect(blockRows(page)).toHaveCount(3)
@@ -10,69 +26,59 @@ test.describe('importing, editing and approving', () => {
 
   test('does not split a sentence on an abbreviation', async ({ page }) => {
     await openDocument(page)
-    await expect(sentenceRows(page).nth(1).locator('.source')).toHaveText(
+    await expect(sentenceRows(page).nth(1).locator('.leaf__source')).toHaveText(
       'Dr. Ellison had waited thirty years.',
     )
   })
 
   test('keeps an edited translation across a reload', async ({ page }) => {
     await openDocument(page)
-    const field = sentenceRows(page).first().locator('textarea')
-    await field.fill('Молчаливый наблюдатель')
-    await field.blur()
-    await expect(editor(page).locator('.counts')).toContainText('1 translated')
+    await draft(page, 0, 'The Silent Observer, translated')
+    await openDesk(page)
+    await expect(desk(page).locator('.thread__count')).toContainText('1 drafted')
 
     await page.reload()
     await editor(page).waitFor()
-    await expect(sentenceRows(page).first().locator('textarea')).toHaveValue('Молчаливый наблюдатель')
+    await expect(field(sentenceRows(page).first())).toHaveValue('The Silent Observer, translated')
   })
 
-  test('editing clears an approval, because the approved text has changed', async ({ page }) => {
+  test('editing unsettles a sentence, because the settled text has changed', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    await row.locator('textarea').fill('Первый вариант')
-    await row.locator('textarea').blur()
-    await row.getByRole('checkbox').check()
-    await expect(row.getByRole('checkbox')).toBeChecked()
+    await draft(page, 0, 'a first attempt')
+    await settle(row).click()
+    await expect(settle(row)).toHaveAttribute('aria-pressed', 'true')
 
-    await row.locator('textarea').fill('Второй вариант')
-    await row.locator('textarea').blur()
-    await expect(row.getByRole('checkbox')).not.toBeChecked()
+    await draft(page, 0, 'a second attempt')
+    await expect(settle(row)).toHaveAttribute('aria-pressed', 'false')
   })
 
-  test('a translation with no text cannot be approved', async ({ page }) => {
+  test('a translation with no text cannot be settled', async ({ page }) => {
     await openDocument(page)
-    await expect(sentenceRows(page).first().getByRole('checkbox')).toBeDisabled()
+    await expect(settle(sentenceRows(page).first())).toBeDisabled()
   })
 
-  test('approving every sentence of a paragraph reports the paragraph as approved', async ({ page }) => {
-    await openDocument(page)
-    const paragraph = blockRows(page).nth(1)
-    const sentences = sentenceRows(page).nth(1)
-    for (const index of [1, 2]) {
-      const row = sentenceRows(page).nth(index)
-      await row.locator('textarea').fill(`перевод ${String(index)}`)
-      await row.locator('textarea').blur()
-      await row.getByRole('checkbox').check()
-    }
-    await expect(sentences.getByRole('checkbox')).toBeChecked()
-    await expect(paragraph.getByRole('checkbox')).toBeChecked()
-  })
-
-  test('approving a paragraph cascades to its sentences and un-approving reverses it', async ({ page }) => {
+  test('settling every sentence of a paragraph reports the paragraph as settled', async ({ page }) => {
     await openDocument(page)
     for (const index of [1, 2]) {
-      const row = sentenceRows(page).nth(index)
-      await row.locator('textarea').fill(`перевод ${String(index)}`)
-      await row.locator('textarea').blur()
+      await draft(page, index, `translation ${String(index)}`)
+      await settle(sentenceRows(page).nth(index)).click()
     }
-    const paragraph = blockRows(page).nth(1)
-    await paragraph.getByRole('checkbox').check()
-    await expect(sentenceRows(page).nth(1).getByRole('checkbox')).toBeChecked()
-    await expect(sentenceRows(page).nth(2).getByRole('checkbox')).toBeChecked()
+    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+    await expect(settle(blockRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+  })
 
-    await paragraph.getByRole('checkbox').uncheck()
-    await expect(sentenceRows(page).nth(1).getByRole('checkbox')).not.toBeChecked()
-    await expect(sentenceRows(page).nth(2).getByRole('checkbox')).not.toBeChecked()
+  test('settling a paragraph cascades to its sentences and unsettling reverses it', async ({ page }) => {
+    await openDocument(page)
+    for (const index of [1, 2]) await draft(page, index, `translation ${String(index)}`)
+
+    const paragraph = blockRows(page).nth(1)
+    await settle(paragraph).click()
+    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+    await expect(settle(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'true')
+
+    await settle(paragraph).click()
+    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'false')
+    await expect(settle(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'false')
   })
 })

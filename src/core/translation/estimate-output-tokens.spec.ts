@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { estimateOutputTokens } from './estimate-output-tokens.js'
 import { outputBudget } from '../../adapters/providers/output-budget.js'
 import type { TranslatableSegment } from '../../ports/provider-port.js'
+import { defaultSettings } from '../settings/default-settings.js'
+
+/** What the cloud providers are asked for; a non-streaming reply has to fit in it. */
+const CEILING = 16_000
 
 const segments = (count: number, length: number): readonly TranslatableSegment[] =>
   Array.from({ length: count }, (_unused, index) => ({
@@ -48,10 +52,14 @@ describe('outputBudget', () => {
     expect(outputBudget(request(500, 2000), 8192)).toBe(8192)
   })
 
-  it('covers a full batch of the default size without truncating', () => {
-    // The failure this guards: a batch whose reply is cut off mid-JSON is
-    // rejected whole, which turned 117 sentences into 73 translated, 44 failed.
-    const batchOfEightThousandTokens = request(60, 530)
-    expect(outputBudget(batchOfEightThousandTokens, 64000)).toBeGreaterThan(20_000)
+  it('covers a full batch of the default size without reaching the ceiling', () => {
+    // Two failures meet here. A reply cut off mid-JSON is rejected whole, which
+    // is one way 117 sentences became 73 translated and 44 failed; and asking a
+    // non-streaming request for an enormous reply is the documented way to have
+    // it refused outright. The batch size and the ceiling have to be set together.
+    const wholeBatch = request(60, defaultSettings.batchTokens * 4 / 60)
+    const budget = outputBudget(wholeBatch, CEILING)
+    expect(budget).toBeGreaterThan(estimateOutputTokens(wholeBatch.segments) * 0.99)
+    expect(budget).toBeLessThan(CEILING)
   })
 })

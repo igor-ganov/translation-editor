@@ -29,7 +29,7 @@ export const anthropicSpec: ProviderSpec = {
       headers: anthropicHeaders(config.apiKey),
       body: JSON.stringify({
         model: config.model,
-        max_tokens: outputBudget(request, 64000),
+        max_tokens: outputBudget(request, 16000),
         system: prompt.system,
         tool_choice: { type: 'tool', name: TOOL_NAME },
         tools: [

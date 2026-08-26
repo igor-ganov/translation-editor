@@ -28,7 +28,7 @@ export const openaiSpec: ProviderSpec = {
       headers: headers(config.apiKey),
       body: JSON.stringify({
         model: config.model,
-        max_completion_tokens: outputBudget(request, 64000),
+        max_completion_tokens: outputBudget(request, 16000),
         messages: [
           { role: 'system', content: prompt.system },
           { role: 'user', content: prompt.user },

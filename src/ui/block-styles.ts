@@ -1,25 +1,28 @@
+import { boxStyles } from './styles/box-styles.js'
 import { css } from 'lit'
-import { pairStyles } from './pair-styles.js'
+import { wholeStyles } from './styles/whole-styles.js'
+import { leafStyles } from './styles/leaf-styles.js'
+import { writingStyles } from './styles/writing-styles.js'
+import { markStyles } from './styles/mark-styles.js'
+import { paperTypeStyles } from './styles/paper-type-styles.js'
+import { actStyles } from './styles/act-styles.js'
+import { actRankStyles } from './styles/act-rank-styles.js'
+import { actQuietStyles } from './styles/act-quiet-styles.js'
 
-/** The paragraph header reuses the pair layout and adds its own affordances. */
+/** The complete stylesheet for a paragraph and its own translation. */
 export const blockStyles = [
-  ...pairStyles,
+  boxStyles,
   css`
     :host {
-      background: var(--te-surface-sunken);
-      border-top: 2px solid var(--te-border);
-    }
-    .kind {
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--te-text-muted);
-      grid-column: 1 / -1;
-      margin: 0;
-    }
-    .overriding {
-      color: var(--te-state-override);
-      font-weight: 600;
+      display: block;
     }
   `,
+  wholeStyles,
+  leafStyles,
+  writingStyles,
+  markStyles,
+  paperTypeStyles,
+  actStyles,
+  actRankStyles,
+  actQuietStyles,
 ]

@@ -1,5 +1,6 @@
 import { Option, pipe } from 'effect'
 import type { Logger } from './create-logger.js'
+import { benignFailure } from './benign-failure.js'
 
 const stackOf = (cause: unknown): string | undefined =>
   pipe(
@@ -17,10 +18,15 @@ const stackOf = (cause: unknown): string | undefined =>
  */
 export const captureFailures = (logger: Logger): void => {
   globalThis.addEventListener('error', (event) => {
-    logger.record('error', 'uncaught', event.message, {
-      source: `${event.filename}:${String(event.lineno)}:${String(event.colno)}`,
-      stack: stackOf(event.error),
-    })
+    pipe(
+      Option.liftPredicate((failure: ErrorEvent) => !benignFailure(failure.message))(event),
+      Option.map((failure) => {
+        logger.record('error', 'uncaught', failure.message, {
+          source: `${failure.filename}:${String(failure.lineno)}:${String(failure.colno)}`,
+          stack: stackOf(failure.error),
+        })
+      }),
+    )
   })
   globalThis.addEventListener('unhandledrejection', (event) => {
     logger.record('error', 'unhandled', 'a promise rejected with no handler', String(event.reason))

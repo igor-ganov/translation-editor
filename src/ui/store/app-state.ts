@@ -5,7 +5,7 @@ import type { UndoEntry } from '../../core/undo/types.js'
 import type { ProjectSummary } from '../../ports/storage-port.js'
 import type { Settings } from '../../ports/settings-port.js'
 
-export type Route = 'projects' | 'editor' | 'settings'
+export type Route = 'projects' | 'editor' | 'desk' | 'contents' | 'settings'
 
 export type SegmentFilter = 'all' | 'untranslated' | 'unapproved' | 'failed'
 
@@ -25,6 +25,15 @@ export type AppState = {
   readonly project: Option.Option<Project>
   readonly settings: Settings
   readonly filter: SegmentFilter
+  /**
+   * Which page of the document is open, counted from zero.
+   *
+   * A page is a range of paragraphs, so this means the same paragraphs on a
+   * phone as on a desktop and survives a font-size change. The old bookmark was
+   * a pixel offset, which is what threw the reader to the end of the document
+   * whenever anything unrelated redrew.
+   */
+  readonly page: number
   readonly collapsed: ReadonlySet<string>
   readonly busy: Busy
   readonly notice: Notice

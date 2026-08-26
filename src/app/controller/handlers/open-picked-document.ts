@@ -22,6 +22,7 @@ export const openPickedDocument =
             ...state,
             project: Option.some(project),
             route: 'editor',
+            page: 0,
             collapsed: new Set(),
           }))
         }),

@@ -11,6 +11,12 @@ export const editorEvents = {
   exportLog: 'te-export-log',
   dismissNotice: 'te-dismiss-notice',
   openSettings: 'te-open-settings',
+  openDesk: 'te-open-desk',
+  openContents: 'te-open-contents',
+  openPage: 'te-open-page',
+  turnPage: 'te-turn-page',
+  goToPage: 'te-go-to-page',
+  setLanguages: 'te-set-languages',
   closeProject: 'te-close-project',
   cursorMove: 'te-cursor-move',
 } as const

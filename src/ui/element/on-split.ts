@@ -5,7 +5,7 @@ import { segmentEvents } from './segment-events.js'
 
 const sourceParagraph = (host: HTMLElement): Option.Option<HTMLElement> =>
   Option.liftPredicate((element: unknown): element is HTMLElement => element instanceof HTMLElement)(
-    host.shadowRoot?.querySelector('.source'),
+    host.shadowRoot?.querySelector('.leaf__source'),
   )
 
 /**

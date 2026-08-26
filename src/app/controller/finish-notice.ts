@@ -5,17 +5,17 @@ import { plural } from './plural.js'
 
 const partly = (outcome: TranslationOutcome): Notice => ({
   tag: 'error',
-  text: `Translated ${String(outcome.translated)}, but ${plural(outcome.failed, 'segment', 'segments')} failed. Filter to "Failed" to retry them.`,
+  text: `Translated ${String(outcome.translated)}, but ${plural(outcome.failed, 'sentence', 'sentences')} failed. Each failed sentence says why beside it; the "Went wrong" filter on the desk collects them.`,
 })
 
 const nothing = (outcome: TranslationOutcome): Notice => ({
   tag: 'error',
-  text: `Nothing was translated — all ${plural(outcome.failed, 'segment', 'segments')} failed. Check the provider settings.`,
+  text: `Nothing was translated. All ${plural(outcome.failed, 'sentence', 'sentences')} failed, and each one says why beside it.`,
 })
 
 const clean = (outcome: TranslationOutcome): Notice => ({
   tag: 'info',
-  text: `Translated ${plural(outcome.translated, 'segment', 'segments')}.`,
+  text: `Translated ${plural(outcome.translated, 'sentence', 'sentences')}.`,
 })
 
 /** A run in which nothing succeeded is a failure, however quietly it ended. */

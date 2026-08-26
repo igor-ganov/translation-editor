@@ -243,32 +243,42 @@ Splitting `entries` into its own store keyed per segment is what makes R11.2 (sa
 
 ## 7. UI design
 
-### 7.1 Layout
+The interface is a book, not a form. Three rules everything else follows from:
 
-Mobile-first (R6.2). One vertical list of blocks; each block renders its block-level pair, then its sentence pairs when expanded.
+1. **Source text is set like a printed page** and the translation sits beneath it in the same face and rhythm, so the eye compares like with like.
+2. **Controls are ranked by consequence, not by frequency.** One control per screen commits something and it is the only filled one; anything reversible is an outline; anything that only changes the view is a plain underlined word; the irreversible one is red.
+3. **Lines are drawn, not printed.** Every outline wanders, so the surface reads as marked-up paper rather than as a form.
 
-- **≤ 719 px (phone, default):** source above, translation below, full width. No horizontal scroll at 320 px. Approve control and status badge sit in a compact row under the translation, sized for touch (≥ 44 × 44 px targets).
-- **≥ 720 px:** two columns, source left, translation right, aligned per segment row.
+The palette is measured by `design/check-contrast.ts` rather than judged by eye; the lowest ratio against the paper is 4.65:1. Paper is light on purpose and says so with `color-scheme: light`, because a phone in dark mode otherwise repaints the background and leaves the ink dark with it.
 
-The breakpoint is a container query on the list, not a viewport media query, so the same components behave correctly inside a narrow desktop pane.
+### 7.1 Screens
 
-A sticky header carries the progress bar (R7.5, R7.6), the filter control (R6.7), and the "next unapproved" action (R7.8).
+Five: the **shelf** (documents), the **page** (one page of the open document), the **desk** (everything that can be done to it), the **contents** (where you are and what is left), and **settings**. The page carries no commands of its own beyond turning: a spine with `Desk` and the folio, the leaves, and the page turner.
 
-### 7.2 Segment states
+### 7.2 Pages, not one endless list (R6.6, R11.3)
 
-Each pair shows exactly one state, driven by an exhaustive `switch` over `TranslationState` plus approval: **untranslated**, **machine-translated**, **edited**, **approved**, **failed**, and — on a block — **overriding its sentences** (R5.4). State is conveyed by icon *and* text, never by colour alone, and announced via `aria-describedby` (R6.8).
+A document is cut into pages. **A page is a range of whole paragraphs**, filled to a budget where a paragraph costs one and each of its sentences costs one more (`pageBudget = 10`, so roughly nine sentences). A paragraph is never split across a turn, because the paragraph translation overrides its sentences and a reader who cannot see both together cannot judge either. A paragraph longer than a whole page becomes a page of its own rather than being cut.
 
-### 7.3 Virtualisation (R6.6)
+This replaces the windowing virtualiser. Measuring the page in paragraphs rather than pixels is what makes page 3 mean the same paragraphs on a phone as on a desktop, before and after a font-size change — and it removes the class of bug where a virtualiser redraw threw the reader to the end of the document.
 
-20 000 sentence pairs cannot all live in the DOM. A windowing virtualiser renders only the visible range plus an overscan margin, using estimated heights refined by `ResizeObserver` as rows are measured. Collapsed blocks (R6.5) reduce the row count dramatically and are the default for blocks whose sentences are all approved.
+**The bookmark is a segment, never an offset.** Turning the page stores the first segment on the page reached; reopening computes the page holding it. That survives a filter, a different device, and a boundary edit that renumbers the pages under it.
 
-### 7.4 Editing (R6.3)
+### 7.3 Layout
 
-`contenteditable` is avoided; each translation is an auto-growing `<textarea>` bound to the segment. Persist on blur and on a 400 ms idle debounce. Any edit sets `TranslationState.edited` and clears approval (R6.4) — one pure `applyEdit` function does both, so the two can never drift apart.
+- **Narrow (default):** one column, source above translation, in the order the work happens on paper.
+- **≥ 60rem:** two columns, source left, translation right, aligned per leaf.
 
-### 7.5 Accessibility (R6.8)
+### 7.4 Segment states
 
-The list is a `role="list"` of `role="listitem"` pairs, each labelled with its Segment ID and state. Approval is a real `<input type="checkbox">` with a visible label. Full keyboard operation: tab through pairs, `Enter` to edit, `Ctrl+Enter` to approve and advance, `Escape` to leave the field. Focus is never trapped by the virtualiser — focused rows are pinned in the rendered window.
+Each leaf shows exactly one state, driven by an exhaustive `switch` over `TranslationState` plus approval: **untouched**, **drafted**, **your wording**, **settled**, **went wrong**, and — on a paragraph — an inked rule down its left edge while it overrides its sentences (R5.4). Every state is a dot **and a word**; colour never carries meaning alone. A failed segment prints the service's own explanation beside it, wrapped rather than clipped.
+
+### 7.5 Editing (R6.3)
+
+`contenteditable` is avoided; each translation is an auto-growing `<textarea>` ruled with a line under the writing rather than boxed. Persist on blur and on a 400 ms idle debounce. Any edit sets `TranslationState.edited` and clears approval (R6.4) — one pure `applyEdit` does both, so the two cannot drift apart. A superseded sentence is `readonly` and dimmed, never hidden or disabled: the point is that it is kept, and it stays readable and focusable.
+
+### 7.6 Accessibility (R6.8)
+
+The page is a `role="list"` of `role="listitem"` leaves, each labelled by its state. Settling is a button carrying `aria-pressed`, not a checkbox, so the word says what pressing it does. Full keyboard operation: tab through leaves, `Ctrl+Enter` to settle and advance, `Escape` to leave the field. Margin commands are drawn as words but their hit area is grown to a 44 px target by a pseudo-element, so the ink and the target can differ without the design changing.
 
 ---
 
@@ -328,6 +338,11 @@ Things the design got wrong, found by building it:
 4. **Cancellation is not a port concern.** `HttpRequest` carries no `AbortSignal`; each transport adapter wires its own `AbortController` to Effect interruption, so interrupting the fibre cancels the request without every caller threading a signal through.
 5. **Startup effects must be suspended.** `restoreLastProject` read the stored project id when its pipeline was *assembled*, which is before settings have loaded. It is wrapped in `Effect.suspend`.
 6. **No type assertions for event payloads.** Rather than casting `CustomEvent.detail`, the custom events are declared in a global `HTMLElementEventMap`, so `addEventListener` hands back a correctly typed detail and no listener asserts anything.
+
+7. **`box-sizing` does not cross a shadow boundary.** The `*` rule in the document stylesheet applies to the document only, so every component has to declare it for itself. Without it a padded element that is also `width: 100%` is wider than its parent by exactly its padding, which is how a 380 px page came to scroll sideways by 32.
+8. **Drawn outlines are stretched SVG, not a live filter.** `feTurbulence` behind every control is a full-surface repaint on every scroll frame, which a mid-range phone pays for in dropped frames. The shipped outlines are inline SVG data URIs with `vector-effect="non-scaling-stroke"`: one decode and nothing after it, and identical in a test browser and on a device. The `feTurbulence` filters remain in the mockups.
+9. **A batch failure had nowhere to go.** `markBatchFailed` stored the reason and nothing ever showed or logged it, so a run could fail every segment it had and the exported record said only that it had. The reason is now written to the log at error level and printed beside the segment.
+10. **The language pair was fixed at import.** It was copied from settings when the document was parsed and could not be changed afterwards, so an Italian document imported under the default pair was sent to the service with English named as its source. The pair is now on the desk, and the Translate group states in a sentence which languages it will use.
 
 ## 12. Review notes
 

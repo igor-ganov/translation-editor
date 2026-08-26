@@ -35,6 +35,12 @@ declare global {
     'te-export-log': CustomEvent<Record<string, never>>
     'te-dismiss-notice': CustomEvent<Record<string, never>>
     'te-open-settings': CustomEvent<Record<string, never>>
+    'te-open-desk': CustomEvent<Record<string, never>>
+    'te-open-contents': CustomEvent<Record<string, never>>
+    'te-open-page': CustomEvent<Record<string, never>>
+    'te-turn-page': CustomEvent<{ readonly by: number }>
+    'te-go-to-page': CustomEvent<{ readonly page: number }>
+    'te-set-languages': CustomEvent<{ readonly from: string; readonly to: string }>
     'te-close-project': CustomEvent<Record<string, never>>
     'te-scroll-to': CustomEvent<Segment>
     'te-import-docx': CustomEvent<Record<string, never>>

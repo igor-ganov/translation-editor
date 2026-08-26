@@ -9,6 +9,7 @@ export const initialState: AppState = {
   project: Option.none(),
   settings: defaultSettings,
   filter: 'all',
+  page: 0,
   collapsed: new Set(),
   busy: { tag: 'idle' },
   notice: { tag: 'none' },

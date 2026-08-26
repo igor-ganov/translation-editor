@@ -1,5 +1,7 @@
 import { Effect, Option, pipe } from 'effect'
 import type { ProjectId } from '../../../core/document/types.js'
+import type { AppState } from '../../../ui/store/app-state.js'
+import { openedAt } from '../opened-at.js'
 import type { Deps } from '../deps.js'
 import { setNotice } from '../set-notice.js'
 import { rememberProject } from '../remember-project.js'
@@ -13,14 +15,17 @@ export const handleOpenProject =
         deps.platform.storage.loadProject(detail.id),
         Effect.map((loaded) => {
           rememberProject(deps)(Option.match(loaded, { onNone: () => undefined, onSome: (p) => p.id }))
-          deps.store.update((state) => ({
-            ...state,
-            project: loaded,
-            // A project that failed to load leaves the user on the list rather
-            // than dropping them into an empty editor.
-            route: Option.match(loaded, { onNone: () => state.route, onSome: () => 'editor' as const }),
-            collapsed: new Set(),
-          }))
+          deps.store.update((state) => {
+            const opened: AppState = {
+              ...state,
+              project: loaded,
+              // A project that failed to load leaves the user on the list rather
+              // than dropping them into an empty editor.
+              route: Option.match(loaded, { onNone: () => state.route, onSome: () => 'editor' as const }),
+              collapsed: new Set(),
+            }
+            return { ...opened, page: openedAt(opened) }
+          })
         }),
         Effect.catchAll((failure) =>
           Effect.sync(() => {

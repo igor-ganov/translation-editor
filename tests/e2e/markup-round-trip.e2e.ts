@@ -3,17 +3,26 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
 import type { Download, Page } from '@playwright/test'
-import { blockRows, editor, openDocument, sentenceRows } from './support/open-document.js'
+import {
+  app,
+  blockRows,
+  desk,
+  field,
+  openDesk,
+  openDocument,
+  sentenceRows,
+} from './support/open-document.js'
 
 /**
- * "Export markup" writes both sides, so two downloads arrive. They are collected
- * from the event stream rather than with two `waitForEvent` calls, which would
- * both resolve on whichever download happens to arrive first.
+ * Exporting the markup writes both sides, so two downloads arrive. They are
+ * collected from the event stream rather than with two `waitForEvent` calls,
+ * which would both resolve on whichever download happens to arrive first.
  */
 const exportMarkup = async (page: Page): Promise<readonly Download[]> => {
   const collected: Download[] = []
   page.on('download', (download) => collected.push(download))
-  await editor(page).getByRole('button', { name: 'Export markup' }).click()
+  await openDesk(page)
+  await desk(page).getByRole('button', { name: 'Marked-up text' }).click()
   await expect.poll(() => collected.length).toBe(2)
   return collected
 }
@@ -29,9 +38,11 @@ const importMarkup = async (page: Page, contents: string): Promise<void> => {
   const path = join(await mkdtemp(join(tmpdir(), 'te-markup-')), 'edited.tmarkup.txt')
   await writeFile(path, contents, 'utf8')
   const chooser = page.waitForEvent('filechooser')
-  await editor(page).getByRole('button', { name: 'Import markup' }).click()
+  await desk(page).getByRole('button', { name: 'Bring a translation back' }).click()
   await (await chooser).setFiles(path)
 }
+
+const slip = (page: Page) => app(page).locator('.slip')
 
 test.describe('the markup round trip', () => {
   test('exports the source with a marker for every segment', async ({ page }) => {
@@ -48,19 +59,19 @@ test.describe('the markup round trip', () => {
     await openDocument(page)
     const translation = await sideOf(await exportMarkup(page), 'translation')
     const filled = translation
-      .replace('⟦b0.s0⟧', '⟦b0.s0⟧Молчаливый наблюдатель')
-      .replace('⟦b1.s0⟧', '⟦b1.s0⟧Доктор Эллисон ждал тридцать лет.')
+      .replace('⟦b0.s0⟧', '⟦b0.s0⟧The Silent Observer, rendered')
+      .replace('⟦b1.s0⟧', '⟦b1.s0⟧Doctor Ellison waited thirty years.')
 
     await importMarkup(page, filled)
 
-    const panel = page.locator('te-app').locator('.confirm')
-    await expect(panel).toBeVisible()
-    await expect(panel).toContainText('Translations to add: 2')
-    await expect(panel).toContainText('Approvals that will be cleared: 0')
+    await expect(slip(page)).toBeVisible()
+    await expect(slip(page)).toContainText('Translations added')
+    await expect(slip(page)).toContainText('Settled sentences that will stop being settled')
 
-    await panel.getByRole('button', { name: 'Apply' }).click()
-    await expect(panel).toHaveCount(0)
-    await expect(sentenceRows(page).first().locator('textarea')).toHaveValue('Молчаливый наблюдатель')
+    await slip(page).getByRole('button', { name: 'Bring it in' }).click()
+    await expect(slip(page)).toHaveCount(0)
+    await desk(page).getByRole('button', { name: 'Back to the page' }).click()
+    await expect(field(sentenceRows(page).first())).toHaveValue('The Silent Observer, rendered')
   })
 
   test('refuses nothing but warns when the file belongs to another document', async ({ page }) => {
@@ -68,23 +79,24 @@ test.describe('the markup round trip', () => {
     const translation = await sideOf(await exportMarkup(page), 'translation')
     await importMarkup(page, translation.replace(/#!doc .*/, '#!doc some-other-document'))
 
-    const panel = page.locator('te-app').locator('.confirm')
-    await expect(panel.locator('.warning')).toBeVisible()
+    await expect(slip(page).locator('.warning')).toBeVisible()
   })
 
   test('exports a .docx the browser accepts as a download', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    await row.locator('textarea').fill('Молчаливый наблюдатель')
-    await row.locator('textarea').blur()
+    await field(row).fill('The Silent Observer, rendered')
+    await field(row).blur()
 
     const started = page.waitForEvent('download')
-    await editor(page).getByRole('button', { name: 'Export .docx' }).click()
+    await openDesk(page)
+    await desk(page).getByRole('button', { name: 'Word document' }).click()
     const file = await started
 
     expect(file.suggestedFilename()).toMatch(/\.ru\.docx$/)
     const bytes = await readFile(await file.path())
     expect(bytes.subarray(0, 2).toString('latin1')).toBe('PK')
+    await desk(page).getByRole('button', { name: 'Back to the page' }).click()
     await expect(blockRows(page)).toHaveCount(3)
   })
 })

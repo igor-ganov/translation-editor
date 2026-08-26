@@ -7,16 +7,21 @@ export const shellStyles = css`
     flex-direction: column;
     height: 100dvh;
     min-height: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
   }
   .body {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
   }
   .working {
-    padding: var(--te-space-2) var(--te-space-3);
-    font-size: 0.875rem;
-    color: var(--te-text-muted);
+    padding: calc(var(--step) * 2);
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-faint);
   }
 `

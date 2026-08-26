@@ -179,8 +179,7 @@ Every task here is test-first and 100% covered, including every `switch` branch.
   Diff summary before applying, confirmation, undo.
   *Verifies:* R10.2–R10.6, R10.8. *Test:* E2E export → modify externally → import → verify diff summary and applied result.
 
-- [x] **T3.14 — Position restore.**
-  Persist the top-of-viewport Segment ID (throttled ~1 s); scroll to it on open.
+- [x] **T3.14 — Position restore.** *Superseded by T5.7:* this stored a pixel offset and was the cause of the jump-to-the-end bug.
   *Verifies:* R11.3. *Test:* E2E scroll, reload, assert the same segment is in view.
 
 - [x] **T3.15 — Accessibility pass.**
@@ -196,6 +195,31 @@ Every task here is test-first and 100% covered, including every `switch` branch.
 - [ ] **T4.2 — Performance pass on a device.** The import budget (R1.6) is covered by parse-docx.perf.spec.ts — 2 000 paragraphs / 20 000 sentences parse and segment in ~0.2s on a desktop. Scrolling that many rows (R6.6) and both budgets on real Android hardware remain unmeasured.
 - [ ] **T4.3 — Signed APK.** `tauri android build --apk` produces an unsigned release (20.6 MB) and the desktop binary builds too. Signing needs a keystore, which is the user's to create and keep.
 - [x] **T4.4 — User documentation** covering the markup round-trip workflow and provider setup.
+
+---
+
+## Phase 5 — The interface rewrite
+
+Prompted by a review of the shipped build: eleven identical buttons in one row, no sense of place in a long document, and a bookmark stored as a pixel offset that threw the reader to the end of the file on any redraw. The mockups in `design/` were approved first; this phase is putting them in the application.
+
+- [x] **T5.1 — Paper design system.** Tokens, drawn outlines as stretched SVG data URIs, and the four control ranks, measured for contrast by `design/check-contrast.ts`.
+  *Verifies:* R15.2–R15.4. *Test:* `palette.spec.ts` holds the stylesheet and the outline colours in step.
+- [x] **T5.2 — Pagination.** A page is a range of whole paragraphs filled to a budget; a paragraph is never split across a turn.
+  *Verifies:* R14.1–R14.3, R14.8. *Test:* `paginate.spec.ts`, `clamp-page.spec.ts`, `pagination.e2e.ts`.
+- [x] **T5.3 — The page turner and the spine.** Turning stops at both ends; the folio opens the contents; `Desk` reaches every command.
+  *Verifies:* R14.4. *Test:* `pagination.e2e.ts`.
+- [x] **T5.4 — Contents.** Every page with what remains on it, the current page marked, and turning to any of them.
+  *Verifies:* R14.5–R14.6. *Test:* `page-state-words.spec.ts`, `pagination.e2e.ts`.
+- [x] **T5.5 — The desk.** Every command grouped by what it does to the user's work, one committing control per screen.
+  *Verifies:* R15.1–R15.4. *Test:* `accessibility.e2e.ts`, `navigation.e2e.ts`.
+- [x] **T5.6 — Leaves.** Source and translation in one face, states as a dot and a word, settling as a pressed word rather than a checkbox.
+  *Verifies:* R15.5, R15.7. *Test:* `accessibility.e2e.ts`, `responsive.e2e.ts`.
+- [x] **T5.7 — Bookmark by segment.** Turning a page stores its first segment; reopening computes the page holding it.
+  *Verifies:* R11.3. *Test:* `pagination.e2e.ts` reopen case. **Supersedes T3.14**, which stored a pixel offset.
+- [x] **T5.8 — Failure reasons on screen and in the log.**
+  *Verifies:* R15.6. *Test:* `failure-reason.spec.ts`, `run-translation.spec.ts`.
+- [x] **T5.9 — Changing a document's language pair.**
+  *Verifies:* R16.1–R16.3. *Test:* `set-languages.spec.ts`.
 
 ---
 

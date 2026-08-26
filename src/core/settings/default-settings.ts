@@ -11,9 +11,10 @@ export const defaultSettings: Settings = {
   baseUrl: undefined,
   apiKeys: {},
   defaultLanguages: { from: 'en', to: 'ru' },
-  // Sized so a whole section usually travels in one request: bigger batches mean
-  // fewer boundaries for terminology to drift across. Output size is no longer
-  // the constraint it was, now that the reply budget scales with the batch.
-  batchTokens: 8000,
+  // Sized so a whole section usually travels in one request, since bigger batches
+  // mean fewer boundaries for terminology to drift across — but no bigger than a
+  // batch whose reply still fits inside what one non-streaming request will
+  // return. `output-budget.spec.ts` holds the two numbers in step.
+  batchTokens: 4000,
   lastProjectId: undefined,
 }

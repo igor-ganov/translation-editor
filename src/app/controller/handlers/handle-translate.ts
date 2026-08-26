@@ -19,11 +19,23 @@ const publish = (deps: Deps) => (project: Project, done: number, total: number) 
     void Effect.runPromise(Effect.ignore(deps.platform.storage.saveProject(project)))
   })
 
+// The service's own sentence, at error level. Before this a run could reject
+// every segment it had and leave a log saying only that it had.
+const reportFailure = (deps: Deps) => (reason: string, count: number) =>
+  Effect.sync(() => {
+    deps.logger.record('error', 'translate', `batch rejected, ${String(count)} segments`, reason)
+  })
+
 const start = (deps: Deps) => (project: Project) => {
   const settings = deps.store.get().settings
   const provider = createProvider(settings.providerId)(providerConfig(settings))(deps.platform.http)
   return pipe(
-    runTranslation({ provider, budgetTokens: settings.batchTokens, onBatchDone: publish(deps) })(project),
+    runTranslation({
+      provider,
+      budgetTokens: settings.batchTokens,
+      onBatchDone: publish(deps),
+      onBatchFailed: reportFailure(deps),
+    })(project),
     Effect.tap((finished) =>
       Effect.sync(() => {
         const outcome = translationOutcome(finished)

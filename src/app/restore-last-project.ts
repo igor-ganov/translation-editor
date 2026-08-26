@@ -1,6 +1,8 @@
 import { Effect, Option, pipe } from 'effect'
 import type { ProjectId } from '../core/document/types.js'
 import { fromUndefined } from '../core/option/from-undefined.js'
+import type { AppState } from '../ui/store/app-state.js'
+import { openedAt } from './controller/opened-at.js'
 import type { Deps } from './controller/deps.js'
 
 const load = (deps: Deps) => (id: ProjectId) =>
@@ -21,11 +23,14 @@ export const restoreLastProject = (deps: Deps): Effect.Effect<void> =>
         onNone: () => Effect.void,
         onSome: (id) =>
           Effect.map(load(deps)(id), (loaded) => {
-            deps.store.update((state) => ({
-              ...state,
-              project: loaded,
-              route: Option.match(loaded, { onNone: () => state.route, onSome: () => 'editor' as const }),
-            }))
+            deps.store.update((state) => {
+              const opened: AppState = {
+                ...state,
+                project: loaded,
+                route: Option.match(loaded, { onNone: () => state.route, onSome: () => 'editor' as const }),
+              }
+              return { ...opened, page: openedAt(opened) }
+            })
           }),
       }),
     ),

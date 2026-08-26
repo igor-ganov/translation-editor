@@ -1,24 +1,33 @@
-import { LitElement, css } from 'lit'
+import { Option, pipe } from 'effect'
+import { LitElement, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import type { Settings } from '../ports/settings-port.js'
 import type { ProviderId } from '../ports/provider-port.js'
+import type { SettingsVerdict } from './render/render-verdict.js'
+import { fromUndefined } from '../core/option/from-undefined.js'
 import { renderSettingsForm } from './render/render-settings-form.js'
+import { actRankStyles } from './styles/act-rank-styles.js'
+import { actQuietStyles } from './styles/act-quiet-styles.js'
+import { actStyles } from './styles/act-styles.js'
+import { boxStyles } from './styles/box-styles.js'
+import { paperFieldStyles } from './styles/paper-field-styles.js'
+import { paperShellStyles } from './styles/paper-shell-styles.js'
+import { paperTypeStyles } from './styles/paper-type-styles.js'
+import { settingsStyles } from './styles/settings-styles.js'
 
 /** Provider credentials, model, and the project's default language pair. */
 @customElement('te-settings')
 export class TeSettings extends LitElement {
-  static override styles = css`
-    :host { display: block; padding: var(--te-space-4); }
-    label { display: grid; gap: var(--te-space-1); margin-bottom: var(--te-space-3); }
-    input, select { min-height: var(--te-touch-target); padding: 0 var(--te-space-2); font: inherit;
-      color: var(--te-text); background: var(--te-surface-raised);
-      border: 1px solid var(--te-border); border-radius: var(--te-radius); }
-    button { min-height: var(--te-touch-target); padding: 0 var(--te-space-3); font: inherit;
-      color: var(--te-text); background: var(--te-surface-raised);
-      border: 1px solid var(--te-border); border-radius: var(--te-radius); cursor: pointer; }
-    .warning { color: var(--te-state-edited); font-size: 0.875rem; }
-    .actions { display: flex; gap: var(--te-space-2); flex-wrap: wrap; }
-  `
+  static override styles = [
+    boxStyles,
+    paperShellStyles,
+    paperTypeStyles,
+    paperFieldStyles,
+    actStyles,
+    actRankStyles,
+    actQuietStyles,
+    settingsStyles,
+  ]
 
   @property({ attribute: false })
   settings: Settings | undefined = undefined
@@ -26,14 +35,30 @@ export class TeSettings extends LitElement {
   @property({ type: Boolean })
   secure = true
 
-  /** Tracks the provider as the user picks it, so the form shows its fields at once. */
+  /** The result of the last check, kept on the page rather than in a passing toast. */
+  @property({ attribute: false })
+  verdict: SettingsVerdict | undefined = undefined
+
+  /** Tracks the service as the user picks it, so the form shows its fields at once. */
   @state()
   private chosen: ProviderId | undefined = undefined
 
   override render() {
-    return renderSettingsForm(this, this.settings, this.secure, this.chosen, (next) => {
-      this.chosen = next
-    })
+    return pipe(
+      fromUndefined(this.settings),
+      Option.map((settings) =>
+        renderSettingsForm(this, {
+          settings,
+          secure: this.secure,
+          providerId: this.chosen ?? settings.providerId,
+          verdict: this.verdict,
+          choose: (next: ProviderId) => {
+            this.chosen = next
+          },
+        }),
+      ),
+      Option.getOrElse(() => nothing),
+    )
   }
 }
 

@@ -191,7 +191,7 @@ Requirement IDs (`R1`…) are referenced by `design.md` and `tasks.md`.
 
 - **R11.1** — THE SYSTEM SHALL persist the whole project — source blocks and sentences, all translations, approvals, language pair, and provider selection — locally, with no network dependency.
 - **R11.2** — WHEN any change is made THE SYSTEM SHALL persist it without an explicit save action by the user.
-- **R11.3** — WHEN the app is reopened THE SYSTEM SHALL restore the last open project and SHALL scroll to the segment the user was last positioned on.
+- **R11.3** — WHEN the app is reopened THE SYSTEM SHALL restore the last open project and SHALL open it on the page holding the segment the user was last positioned on. The stored position SHALL be a segment, never a pixel offset, so that it survives a font-size change, a different device, and an edit that moves a sentence boundary.
 - **R11.4** — WHERE the platform has windows (desktop) THE SYSTEM SHALL restore the window's position, size and maximised state from the previous session.
 - **R11.5** — THE SYSTEM SHALL survive an abrupt termination (process kill, Android low-memory kill) without losing more than the last few seconds of edits and without leaving the stored project corrupt or half-written.
 - **R11.6** — THE SYSTEM SHALL support more than one project and SHALL let the user list, open, and delete them.
@@ -225,6 +225,41 @@ Automatic segmentation (R1.2) systematically mis-splits on `Dr. Smith`, `г. М�
 
 ---
 
+### R14 — Reading a long document
+
+*A translator works through a book over days. One list of twenty thousand rows is not a way to read one, and it is not a way to say where you are.*
+
+- **R14.1** — THE SYSTEM SHALL divide the open document into pages and SHALL show exactly one page at a time.
+- **R14.2** — A page SHALL be a range of whole paragraphs; THE SYSTEM SHALL NOT split a paragraph or separate it from its sentences across a page boundary.
+- **R14.3** — WHERE a single paragraph is larger than a page THE SYSTEM SHALL give it a page of its own rather than cutting it.
+- **R14.4** — THE SYSTEM SHALL let the user turn to the next and previous page, and WHEN the first or last page is reached THE SYSTEM SHALL stop there rather than wrapping round.
+- **R14.5** — THE SYSTEM SHALL provide a contents listing every page with what remains to be done on it, and SHALL let the user turn to any page from it.
+- **R14.6** — THE SYSTEM SHALL mark the page currently being read in the contents.
+- **R14.7** — WHEN a filter is applied THE SYSTEM SHALL re-cut the document over what remains and SHALL state how many pages that is.
+- **R14.8** — Page identity SHALL depend only on the document and the filter, not on viewport size, font size or device.
+
+---
+
+### R15 — Controls ranked by consequence
+
+*Eleven identical buttons in one row said nothing about which of them spends money and which changes a filter.*
+
+- **R15.1** — THE SYSTEM SHALL group every command that acts on a document on one screen, grouped by what it does to the user's work, with each group stating in plain text what it does.
+- **R15.2** — THE SYSTEM SHALL give each screen at most one control that commits something, and SHALL make it visually distinct from all others.
+- **R15.3** — THE SYSTEM SHALL distinguish, visually, commands that write from commands that only change what is displayed.
+- **R15.4** — THE SYSTEM SHALL draw the only irreversible command differently from every other command.
+- **R15.5** — THE SYSTEM SHALL state every segment state in words as well as by colour.
+- **R15.6** — WHEN a translation fails THE SYSTEM SHALL show the reason given by the service, in full and wrapped, beside the segment it applies to.
+- **R15.7** — THE SYSTEM SHALL keep every interactive target at least 44 px in its smaller dimension, including controls drawn as plain words.
+
+---
+
+### R16 — Changing the language pair of a document
+
+- **R16.1** — THE SYSTEM SHALL let the user change the language pair of a document after it has been imported.
+- **R16.2** — WHEN the pair is changed THE SYSTEM SHALL keep every existing translation and approval, and SHALL leave sentence boundaries unchanged.
+- **R16.3** — THE SYSTEM SHALL state, before a translation run is started, which languages that run will use.
+
 ## 4. Requirement → verification map
 
 Every criterion is verified by at least one automated test. Test names are fixed in `tasks.md`; this table fixes the *level*.
@@ -245,6 +280,9 @@ Every criterion is verified by at least one automated test. Test names are fixed
 | R11 | unit (persistence layer, crash-safety), E2E (reload restores project and scroll position) |
 | R12 | build check for both targets, E2E suite run against the browser build |
 | R13 | unit (merge/split invariants, ID allocation, undo), E2E (fix a bad split, translations follow) |
+| R14 | unit (`paginate`, `clampPage`, `pageOfSegment`, `pageSummary`), E2E (turn pages, ends do not wrap, contents, reopen on the right page) |
+| R15 | E2E (one committing control per screen, states in words, touch targets), design review against the mockups |
+| R16 | unit (`setLanguages` keeps translations and boundaries), manual check that the run states its pair |
 
 ---
 

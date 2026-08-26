@@ -43,7 +43,7 @@ export const geminiSpec: ProviderSpec = {
         systemInstruction: { parts: [{ text: prompt.system }] },
         contents: [{ role: 'user', parts: [{ text: prompt.user }] }],
         generationConfig: {
-          maxOutputTokens: outputBudget(request, 32000),
+          maxOutputTokens: outputBudget(request, 16000),
           responseMimeType: 'application/json',
           responseSchema: openApiSchema,
         },

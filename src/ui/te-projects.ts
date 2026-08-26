@@ -1,57 +1,58 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import type { ProjectSummary } from '../ports/storage-port.js'
-import { emit } from './element/emit.js'
-import { projectEvents } from './element/project-events.js'
-import { whenPresent } from './render/when-present.js'
+import { renderProjectsActs } from './render/render-projects-acts.js'
+import { renderProjectsCount } from './render/render-projects-count.js'
+import { renderProjectsShelf } from './render/render-projects-shelf.js'
+import type { ShelfEntry } from './render/render-projects-shelf.js'
+import { actRankStyles } from './styles/act-rank-styles.js'
+import { actQuietStyles } from './styles/act-quiet-styles.js'
+import { boxStyles } from './styles/box-styles.js'
+import { actStyles } from './styles/act-styles.js'
+import { paperShellStyles } from './styles/paper-shell-styles.js'
+import { paperTypeStyles } from './styles/paper-type-styles.js'
+import { projectsScreenStyles } from './styles/projects-screen-styles.js'
+import { shelfStyles } from './styles/shelf-styles.js'
+import { threadStyles } from './styles/thread-styles.js'
 
-/** The landing screen: open an existing project, or import a new document. */
+/** The library: every document on this device, and the one way to bring in another. */
 @customElement('te-projects')
 export class TeProjects extends LitElement {
-  static override styles = css`
-    :host { display: block; padding: var(--te-space-4); }
-    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--te-space-2); }
-    li { display: flex; gap: var(--te-space-2); align-items: center; }
-    button { min-height: var(--te-touch-target); padding: 0 var(--te-space-3); font: inherit;
-      color: var(--te-text); background: var(--te-surface-raised);
-      border: 1px solid var(--te-border); border-radius: var(--te-radius); cursor: pointer; }
-    .open { flex: 1; text-align: left; }
-    .empty { color: var(--te-text-muted); }
-  `
+  static override styles = [
+    boxStyles,
+    paperShellStyles,
+    paperTypeStyles,
+    shelfStyles,
+    threadStyles,
+    actStyles,
+    actRankStyles,
+    actQuietStyles,
+    projectsScreenStyles,
+  ]
 
   @property({ attribute: false })
-  projects: readonly ProjectSummary[] = []
+  projects: readonly ShelfEntry[] = []
 
   override render() {
     return html`
-      <h1>Translation Editor</h1>
-      <div class="actions">
-        <button type="button" @click=${() => { emit(this, projectEvents.importDocx, {}) }}>Import .docx</button>
-        <button type="button" @click=${() => { emit(this, projectEvents.openSettings, {}) }}>Settings</button>
-        <button type="button" title="Save a diagnostic log to share"
-          @click=${() => { emit(this, 'te-export-log', {}) }}>Save log</button>
-      </div>
-      ${whenPresent(this.projects.length === 0, () => html`<p class="empty">No documents yet.</p>`)}
-      <ul>
-        ${this.projects.map(
-          (summary) => html`
-            <li>
-              <button class="open" type="button"
-                @click=${() => { emit(this, projectEvents.open, { id: summary.id }) }}>
-                ${summary.name}
-              </button>
-              <button type="button" aria-label=${`Delete ${summary.name}`}
-                @click=${() => { emit(this, projectEvents.remove, { id: summary.id }) }}>
-                Delete
-              </button>
-            </li>
-          `,
-        )}
-      </ul>
+      <header class="spine">
+        <span class="spine__work">Translation Editor</span>
+        <span class="spine__where">${renderProjectsCount(this.projects.length)}</span>
+      </header>
+      <main class="page">
+        <h1>Your documents</h1>
+        <p class="aside">
+          Pick up where you left off, or bring in something new. Nothing here is uploaded
+          anywhere: the documents and their translations sit on this device.
+        </p>
+        ${renderProjectsShelf(this, this.projects)} ${renderProjectsActs(this)}
+        <p class="aside note">Removing a document removes its translation with it. Export first.</p>
+      </main>
     `
   }
 }
 
 declare global {
-  interface HTMLElementTagNameMap { 'te-projects': TeProjects }
+  interface HTMLElementTagNameMap {
+    'te-projects': TeProjects
+  }
 }

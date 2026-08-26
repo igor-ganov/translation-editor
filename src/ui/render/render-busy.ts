@@ -10,7 +10,7 @@ export const renderBusy = (busy: Busy) => {
       return html`<p class="working" role="status">${busy.label}…</p>`
     case 'translating':
       return html`<p class="working" role="status">
-        Translating ${String(busy.done)} of ${String(busy.total)} segments…
+        Translating: ${String(busy.done)} of ${String(busy.total)} sentences done.
       </p>`
   }
 }

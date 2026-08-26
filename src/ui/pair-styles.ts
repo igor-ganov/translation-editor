@@ -1,6 +1,29 @@
-import { pairLayoutStyles } from './styles/pair-layout-styles.js'
-import { pairFieldStyles } from './styles/pair-field-styles.js'
-import { controlStyles } from './styles/control-styles.js'
+import { boxStyles } from './styles/box-styles.js'
+import { css } from 'lit'
+import { leafStyles } from './styles/leaf-styles.js'
+import { writingStyles } from './styles/writing-styles.js'
+import { markStyles } from './styles/mark-styles.js'
+import { failureStyles } from './styles/failure-styles.js'
+import { actStyles } from './styles/act-styles.js'
+import { actRankStyles } from './styles/act-rank-styles.js'
+import { actQuietStyles } from './styles/act-quiet-styles.js'
 
-/** The complete stylesheet for a source/translation pair. */
-export const pairStyles = [pairLayoutStyles, pairFieldStyles, controlStyles]
+/** The complete stylesheet for one sentence on the page. */
+export const pairStyles = [
+  boxStyles,
+  css`
+    :host {
+      display: block;
+    }
+    :host([superseded]) .leaf {
+      opacity: 0.55;
+    }
+  `,
+  leafStyles,
+  writingStyles,
+  markStyles,
+  failureStyles,
+  actStyles,
+  actRankStyles,
+  actQuietStyles,
+]

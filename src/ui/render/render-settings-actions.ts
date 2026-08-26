@@ -1,24 +1,27 @@
 import { html } from 'lit'
 import { emit } from '../element/emit.js'
 import { projectEvents } from '../element/project-events.js'
-import { readForm } from '../element/read-form.js'
+import { sendForm } from './send-form.js'
 
-/** Reads the form once and sends it, so Save and Test see identical values. */
-const submit = (host: HTMLElement, name: string) => () => {
-  emit(host, name, readForm(host.shadowRoot ?? host))
-}
-
+/**
+ * Saving is the one thing on this screen that commits, so it is the one filled
+ * control. Leaving without saving costs nothing and is drawn as costing nothing.
+ */
 export const renderSettingsActions = (host: HTMLElement) => html`
-  <div class="actions">
-    <button type="button" @click=${submit(host, projectEvents.saveSettings)}>Save</button>
-    <button type="button" @click=${submit(host, projectEvents.testProvider)}>Test connection</button>
-    <button
-      type="button"
-      @click=${() => {
-        emit(host, projectEvents.back, {})
-      }}
-    >
-      Back
-    </button>
-  </div>
+  <menu class="acts acts--close">
+    <li>
+      <button class="act act--commit" type="button" @click=${sendForm(host, projectEvents.saveSettings)}>Save</button>
+    </li>
+    <li>
+      <button
+        class="act"
+        type="button"
+        @click=${() => {
+          emit(host, projectEvents.back, {})
+        }}
+      >
+        Discard
+      </button>
+    </li>
+  </menu>
 `

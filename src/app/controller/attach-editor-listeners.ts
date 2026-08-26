@@ -12,6 +12,9 @@ import { handleUndo } from './handlers/handle-undo.js'
 import { handleExportLog } from './handlers/handle-export-log.js'
 import { handleDismissNotice } from './handlers/handle-dismiss-notice.js'
 import { handleRoute } from './handlers/handle-route.js'
+import { handleTurnPage } from './handlers/handle-turn-page.js'
+import { handleGoToPage } from './handlers/handle-go-to-page.js'
+import { handleSetLanguages } from './handlers/handle-set-languages.js'
 import type { Deps } from './deps.js'
 
 /** Events raised by the editor header and the import confirmation. */
@@ -31,9 +34,21 @@ export const attachEditorListeners =
     host.addEventListener('te-import-markup', handleImportMarkup(deps))
     host.addEventListener('te-confirm-import', handleConfirmImport(deps))
     host.addEventListener('te-cancel-import', handleCancelImport(deps))
-    host.addEventListener('te-next-unapproved', handleNextUnapproved(deps)(host))
+    host.addEventListener('te-next-unapproved', handleNextUnapproved(deps))
     host.addEventListener('te-undo', handleUndo(deps))
     host.addEventListener('te-export-log', handleExportLog(deps))
     host.addEventListener('te-dismiss-notice', handleDismissNotice(deps))
     host.addEventListener('te-close-project', handleRoute(deps)('projects'))
+    host.addEventListener('te-open-desk', handleRoute(deps)('desk'))
+    host.addEventListener('te-open-contents', handleRoute(deps)('contents'))
+    host.addEventListener('te-open-page', handleRoute(deps)('editor'))
+    host.addEventListener('te-turn-page', (event) => {
+      handleTurnPage(deps)(event.detail)
+    })
+    host.addEventListener('te-go-to-page', (event) => {
+      handleGoToPage(deps)(event.detail)
+    })
+    host.addEventListener('te-set-languages', (event) => {
+      handleSetLanguages(deps)(event.detail)
+    })
   }
