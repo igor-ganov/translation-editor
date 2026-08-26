@@ -1,11 +1,12 @@
 import { html } from 'lit'
 import type { SentenceRow } from '../../core/view/types.js'
-import type { LeafEditing } from './leaf-editing.js'
+import type { SentenceMode } from './sentence-mode.js'
 import { statusId } from '../element/status-id.js'
 import { renderMark } from './render-mark.js'
 import { renderFailureNote } from './render-failure-note.js'
 import { renderLeafActs } from './render-leaf-acts.js'
 import { renderTarget } from './render-target.js'
+import { renderMend } from './render-mend.js'
 
 /** Indexed by `Number(editing)`: the editor spans the page, reading stays in columns. */
 const SHAPE: readonly string[] = ['leaf__pair', 'leaf__pair leaf__pair--writing']
@@ -17,7 +18,7 @@ const SHAPE: readonly string[] = ['leaf__pair', 'leaf__pair leaf__pair--writing'
  * beneath it — and both are set in the same face and measure so the eye compares
  * like with like instead of crossing a boundary between a document and a form.
  */
-export const renderLeaf = (host: HTMLElement, row: SentenceRow, mode: LeafEditing) => {
+export const renderLeaf = (host: HTMLElement, row: SentenceRow, mode: SentenceMode) => {
   const status = statusId(row.id)
   const writing = {
     id: row.id,
@@ -36,6 +37,7 @@ export const renderLeaf = (host: HTMLElement, row: SentenceRow, mode: LeafEditin
         ${renderMark(status, row.translation, row.approved)} ${renderFailureNote(row.translation)}
       </p>
       <menu class="leaf__commands">${renderLeafActs(host, row, mode)}</menu>
+      ${renderMend(host, row, mode)}
     </article>
   `
 }

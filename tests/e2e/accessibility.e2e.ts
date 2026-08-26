@@ -80,7 +80,7 @@ test.describe('accessibility', () => {
     const row = sentenceRows(page).first()
     await expect(row.locator('.leaf__state .act')).toHaveCount(0)
     await expect(row.locator('.leaf__commands .mark')).toHaveCount(0)
-    await expect(row.locator('.leaf__commands button')).toHaveCount(4)
+    await expect(row.locator('.leaf__commands button')).toHaveCount(3)
   })
 
   test('gives every command a drawn hint and a word, never a glyph on its own', async ({ page }) => {
@@ -92,7 +92,7 @@ test.describe('accessibility', () => {
         words: button.textContent.trim().length,
       })),
     )
-    expect(named).toHaveLength(4)
+    expect(named).toHaveLength(3)
     expect(named.every((command) => command.icons === 1 && command.words > 0)).toBe(true)
   })
 

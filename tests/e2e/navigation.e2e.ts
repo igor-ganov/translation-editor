@@ -4,6 +4,7 @@ import {
   blockRows,
   chooseFilter,
   leaveDesk,
+  openMend,
   openDocument,
   runFromDesk,
   sentenceRows,
@@ -54,7 +55,8 @@ test.describe('moving around the document', () => {
     await openDocument(page)
     await expect(sentenceRows(page)).toHaveCount(4)
 
-    await sentenceRows(page).nth(1).getByRole('button', { name: 'merge with next' }).click()
+    const panel = await openMend(sentenceRows(page).nth(1))
+    await panel.getByRole('button', { name: 'Join this to the next sentence' }).click()
     await expect(sentenceRows(page)).toHaveCount(3)
 
     await runFromDesk(page, /^Undo/)

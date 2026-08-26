@@ -44,4 +44,5 @@ export const commandBarStyles = css`
   .act[disabled] .command__icon {
     opacity: 0.55;
   }
+
 `

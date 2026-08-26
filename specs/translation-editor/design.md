@@ -280,7 +280,15 @@ The reason is a bug this replaces. Every translation was a permanently-open one-
 
 Which segment is being edited is held by the row element, not by the application: it is not part of the document, so it does not survive a reload or travel to the desk. Any edit sets `TranslationState.edited` and clears approval (R6.4) — one pure `applyEdit` does both, so the two cannot drift apart. A superseded sentence is shown as text and offers no `edit`: it is kept and legible, but it is not what the document will export while the paragraph stands in for it.
 
-### 7.6 Accessibility (R6.8)
+### 7.6 Repairing a sentence break (R13)
+
+Merging and splitting are repairs, wanted on a handful of sentences in a document and never on the rest. Shown as two permanent commands beside the ones used constantly, they were noise that no reader could account for — the question they actually prompted was "what do these even do".
+
+They now sit behind one control, `sentence break`, which opens a panel saying what a sentence break is, why a document has them, and what each repair does. The panel also states the precondition that nothing else could: splitting acts on the point tapped in the *original*, so the reader has to put it there first.
+
+The state a row is in — reading, writing, or mending — is one field, not a flag per panel: two booleans admit a fourth state with no meaning, and the row would then have to be trusted never to reach it.
+
+### 7.7 Accessibility (R6.8)
 
 The page is a `role="list"` of `role="listitem"` leaves, each labelled by its state. Settling is a button carrying `aria-pressed`, not a checkbox, so the word says what pressing it does. Full keyboard operation: tab through leaves, `Ctrl+Enter` to settle and advance, `Escape` to leave the field. Margin commands are drawn as words but their hit area is grown to a 44 px target by a pseudo-element, so the ink and the target can differ without the design changing.
 

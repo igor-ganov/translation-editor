@@ -1,10 +1,8 @@
 import { html } from 'lit'
 import type { SentenceRow } from '../../core/view/types.js'
-import type { LeafEditing } from './leaf-editing.js'
+import type { SentenceMode } from './sentence-mode.js'
 import { textOf } from '../element/text-of.js'
 import { onApprove } from '../element/on-approve.js'
-import { onSplit } from '../element/on-split.js'
-import { emit } from '../element/emit.js'
 import { segmentEvents } from '../element/segment-events.js'
 import { whenPresent } from './when-present.js'
 import { commandIcon } from './command-icon.js'
@@ -13,12 +11,12 @@ import { commandIcon } from './command-icon.js'
 const APPROVE_WORDS: readonly string[] = ['approve', 'unapprove']
 const APPROVE_ICONS: readonly ('approve' | 'unapprove')[] = ['approve', 'unapprove']
 
-const merging = (host: HTMLElement, row: SentenceRow) => () => {
-  emit(host, segmentEvents.mergeNext, { id: row.id })
-}
-
-/** Everything that can be done to one sentence, and nothing that merely describes it. */
-export const renderLeafActs = (host: HTMLElement, row: SentenceRow, mode: LeafEditing) => html`
+/**
+ * The three things done to a sentence. Repairing a sentence break is one of
+ * them and not two, because a reader meeting "merge with next" and "split here"
+ * side by side has no way to tell what either is for.
+ */
+export const renderLeafActs = (host: HTMLElement, row: SentenceRow, mode: SentenceMode) => html`
   ${whenPresent(
     ![mode.editing, row.superseded].some(Boolean),
     () => html`<li>
@@ -40,15 +38,9 @@ export const renderLeafActs = (host: HTMLElement, row: SentenceRow, mode: LeafEd
     </button>
   </li>
   <li>
-    <button type="button" class="act act--quiet" @click=${merging(host, row)}
-      title="This sentence was split in the wrong place: join it to the one after it">
-      ${commandIcon('merge')}merge with next
-    </button>
-  </li>
-  <li>
-    <button type="button" class="act act--quiet" @click=${onSplit(host, row)}
-      title="Split this sentence in two, at the point you tapped in the original">
-      ${commandIcon('split')}split here
+    <button type="button" class="act act--quiet" aria-expanded=${mode.mending} @click=${mode.mend}
+      title="This sentence starts or ends in the wrong place">
+      ${commandIcon('split')}sentence break
     </button>
   </li>
 `

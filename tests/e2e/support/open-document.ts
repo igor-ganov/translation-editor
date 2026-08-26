@@ -23,6 +23,14 @@ export const openEditor = async (row: Locator): Promise<Locator> => {
   return field(row)
 }
 
+/** Repairing a sentence break is folded away behind one control that explains it. */
+export const openMend = async (row: Locator): Promise<Locator> => {
+  await row.getByRole('button', { name: 'sentence break' }).click()
+  const panel = row.locator('.mend')
+  await panel.waitFor()
+  return panel
+}
+
 export const writeIn = async (row: Locator, text: string): Promise<void> => {
   const box = await openEditor(row)
   await box.fill(text)

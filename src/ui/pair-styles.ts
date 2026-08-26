@@ -1,5 +1,6 @@
 import { boxStyles } from './styles/box-styles.js'
 import { commandBarStyles } from './styles/command-bar-styles.js'
+import { mendStyles } from './styles/mend-styles.js'
 import { css } from 'lit'
 import { leafStyles } from './styles/leaf-styles.js'
 import { writingStyles } from './styles/writing-styles.js'
@@ -22,6 +23,7 @@ export const pairStyles = [
   `,
   leafStyles,
   commandBarStyles,
+  mendStyles,
   writingStyles,
   markStyles,
   failureStyles,
