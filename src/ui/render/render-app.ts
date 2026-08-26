@@ -9,7 +9,13 @@ import '../te-settings.js'
 
 const VIEWS: Record<AppState['route'], (state: AppState) => unknown> = {
   projects: (state) => html`<te-projects .projects=${state.projects}></te-projects>`,
-  settings: (state) => html`<te-settings .settings=${state.settings} ?secure=${state.secureCredentials}></te-settings>`,
+  settings: (state) => html`
+    <te-settings
+      .settings=${state.settings}
+      ?secure=${state.secureCredentials}
+      ?hasDocument=${Option.isSome(state.project)}
+    ></te-settings>
+  `,
   desk: (state) => html`
     <te-desk
       .project=${Option.getOrUndefined(state.project)}

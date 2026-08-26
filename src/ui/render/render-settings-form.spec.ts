@@ -23,6 +23,7 @@ const draw = (providerId: ProviderId): HTMLElement => {
       secure: true,
       providerId,
       verdict: undefined,
+      hasDocument: false,
       choose: () => undefined,
     }),
     host,

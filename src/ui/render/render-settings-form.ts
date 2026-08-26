@@ -15,7 +15,7 @@ const browserWarning = () => html`
 
 /** The whole settings page: who translates, with what credentials, and between which languages. */
 export const renderSettingsForm = (host: HTMLElement, view: SettingsView) => html`
-  ${renderSettingsSpine(host)}
+  ${renderSettingsSpine(host, view.hasDocument)}
   <main class="page colophon">
     <h1>Settings</h1>
     <p class="aside">

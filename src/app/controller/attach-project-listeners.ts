@@ -4,6 +4,7 @@ import { handleRemoveProject } from './handlers/handle-remove-project.js'
 import { handleSaveSettings } from './handlers/handle-save-settings.js'
 import { handleTestProvider } from './handlers/handle-test-provider.js'
 import { handleRoute } from './handlers/handle-route.js'
+import { handleBack } from './handlers/handle-back.js'
 import type { Deps } from './deps.js'
 
 /** Events raised by the project list and the settings screen. */
@@ -22,5 +23,5 @@ export const attachProjectListeners =
     })
     host.addEventListener('te-test-provider', handleTestProvider(deps))
     host.addEventListener('te-open-settings', handleRoute(deps)('settings'))
-    host.addEventListener('te-back', handleRoute(deps)('projects'))
+    host.addEventListener('te-back', handleBack(deps))
   }

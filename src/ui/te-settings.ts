@@ -35,6 +35,10 @@ export class TeSettings extends LitElement {
   @property({ type: Boolean })
   secure = true
 
+  /** True when a document is open, so the way back leads to it rather than the shelf. */
+  @property({ type: Boolean })
+  hasDocument = false
+
   /** The result of the last check, kept on the page rather than in a passing toast. */
   @property({ attribute: false })
   verdict: SettingsVerdict | undefined = undefined
@@ -52,6 +56,7 @@ export class TeSettings extends LitElement {
           secure: this.secure,
           providerId: this.chosen ?? settings.providerId,
           verdict: this.verdict,
+          hasDocument: this.hasDocument,
           choose: (next: ProviderId) => {
             this.chosen = next
           },

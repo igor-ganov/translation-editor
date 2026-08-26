@@ -10,5 +10,7 @@ export type SettingsView = {
   /** The service being edited, which differs from the saved one until Save. */
   readonly providerId: ProviderId
   readonly verdict: SettingsVerdict | undefined
+  /** True when a document is open, so the way back leads to it and not to the shelf. */
+  readonly hasDocument: boolean
   readonly choose: (next: ProviderId) => void
 }
