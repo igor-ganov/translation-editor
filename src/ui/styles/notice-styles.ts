@@ -12,6 +12,7 @@ import { css } from 'lit'
 export const noticeStyles = css`
   .notice {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: calc(var(--step) * 1.5);
     margin: 0;
@@ -28,19 +29,27 @@ export const noticeStyles = css`
     min-width: 0;
     overflow-wrap: anywhere;
   }
-  .notice__close {
+  .notice__acts {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+    gap: calc(var(--step) * 2);
+    margin-left: auto;
+  }
+  .notice__act {
     flex: none;
     min-height: var(--touch);
     padding: 0 var(--step);
     font: inherit;
     font-size: 0.875rem;
+    white-space: nowrap;
     color: var(--ink-soft);
     background: none;
     border: 0;
     border-bottom: 1px solid var(--rule);
     cursor: pointer;
   }
-  .notice__close:hover {
+  .notice__act:hover {
     color: var(--ink);
     border-bottom-color: var(--ink);
   }

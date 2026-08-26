@@ -2,6 +2,7 @@ import { Effect, Option, pipe } from 'effect'
 import type { ProjectId } from '../../../core/document/types.js'
 import type { AppState } from '../../../ui/store/app-state.js'
 import { openedAt } from '../opened-at.js'
+import { persistProject } from '../persist-project.js'
 import type { Deps } from '../deps.js'
 import { setNotice } from '../set-notice.js'
 import { rememberProject } from '../remember-project.js'
@@ -26,6 +27,7 @@ export const handleOpenProject =
             }
             return { ...opened, page: openedAt(opened) }
           })
+          for (const project of Option.toArray(loaded)) persistProject(deps)(project)
         }),
         Effect.catchAll((failure) =>
           Effect.sync(() => {

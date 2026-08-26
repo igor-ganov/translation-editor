@@ -7,7 +7,7 @@ import { providerConfig } from '../../actions/provider-config.js'
 import { setBusy } from '../set-busy.js'
 import { setNotice } from '../set-notice.js'
 import { finishNotice } from '../finish-notice.js'
-import { translationOutcome } from '../../../core/translation/translation-outcome.js'
+import { runTally } from '../run-tally.js'
 import { runningTranslation } from '../running-translation.js'
 import type { Deps } from '../deps.js'
 
@@ -20,25 +20,26 @@ const publish = (deps: Deps) => (project: Project, done: number, total: number) 
   })
 
 // The service's own sentence, at error level. Before this a run could reject
-// every segment it had and leave a log saying only that it had.
-const reportFailure = (deps: Deps) => (reason: string, count: number) =>
-  Effect.sync(() => {
-    deps.logger.record('error', 'translate', `batch rejected, ${String(count)} segments`, reason)
-  })
+// every sentence it had and leave a record saying only that it had.
+const report = (deps: Deps) => (reason: string, count: number): void => {
+  deps.logger.record('error', 'translate', `batch rejected, ${String(count)} sentences`, reason)
+}
 
 const start = (deps: Deps) => (project: Project) => {
   const settings = deps.store.get().settings
   const provider = createProvider(settings.providerId)(providerConfig(settings))(deps.platform.http)
+  const attempted = selectUntranslated(project).length
+  const tally = runTally(report(deps))
   return pipe(
     runTranslation({
       provider,
       budgetTokens: settings.batchTokens,
       onBatchDone: publish(deps),
-      onBatchFailed: reportFailure(deps),
+      onBatchFailed: tally.record,
     })(project),
-    Effect.tap((finished) =>
+    Effect.tap(() =>
       Effect.sync(() => {
-        const outcome = translationOutcome(finished)
+        const outcome = tally.outcome(attempted)
         deps.logger.record('info', 'translate', 'run finished', outcome)
         setBusy(deps)({ tag: 'idle' })
         setNotice(deps)(finishNotice(outcome))
@@ -56,7 +57,7 @@ export const handleTranslate = (deps: Deps) => (): void => {
     // The total is counted up front so the first thing shown is the real figure
     // rather than "0 of 0" until the first batch comes back.
     const outstanding = selectUntranslated(project).length
-    deps.logger.record('info', 'translate', `run started, ${String(outstanding)} segments outstanding`, {
+    deps.logger.record('info', 'translate', `run started, ${String(outstanding)} sentences outstanding`, {
       provider: deps.store.get().settings.providerId,
       model: deps.store.get().settings.model,
       languages: `${project.languages.from}>${project.languages.to}`,

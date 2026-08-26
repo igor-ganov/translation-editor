@@ -3,6 +3,7 @@ import type { ProjectId } from '../core/document/types.js'
 import { fromUndefined } from '../core/option/from-undefined.js'
 import type { AppState } from '../ui/store/app-state.js'
 import { openedAt } from './controller/opened-at.js'
+import { persistProject } from './controller/persist-project.js'
 import type { Deps } from './controller/deps.js'
 
 const load = (deps: Deps) => (id: ProjectId) =>
@@ -31,6 +32,7 @@ export const restoreLastProject = (deps: Deps): Effect.Effect<void> =>
               }
               return { ...opened, page: openedAt(opened) }
             })
+            for (const project of Option.toArray(loaded)) persistProject(deps)(project)
           }),
       }),
     ),

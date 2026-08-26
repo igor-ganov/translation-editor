@@ -3,6 +3,7 @@ import type { Project } from '../../../core/project/types.js'
 import type { blocksRecordSchema } from './schemas/blocks-record-schema.js'
 import type { entryRecordSchema } from './schemas/entry-record-schema.js'
 import type { projectRecordSchema } from './schemas/project-record-schema.js'
+import { repairName } from '../../../core/project/repair-name.js'
 
 type ProjectRecord = typeof projectRecordSchema.Type
 type BlocksRecord = typeof blocksRecordSchema.Type
@@ -18,8 +19,7 @@ export const fromRecords =
   (record: Option.Option<ProjectRecord>): Option.Option<Project> =>
     pipe(
       record,
-      Option.map(
-        (found): Project => ({
+      Option.map((found): Project => repairName({
           id: found.id,
           name: found.name,
           documentHash: found.documentHash,
@@ -30,6 +30,5 @@ export const fromRecords =
           cursor: found.cursor,
           createdAt: found.createdAt,
           updatedAt: found.updatedAt,
-        }),
-      ),
+      })),
     )

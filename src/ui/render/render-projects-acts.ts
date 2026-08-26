@@ -27,10 +27,10 @@ export const renderProjectsActs = (host: HTMLElement) => html`
       <button
         class="act"
         type="button"
-        title="Save a diagnostic log to share"
+        title="Write a diagnostic record to a file you can send on"
         @click=${send(host, 'te-export-log')}
       >
-        Save log
+        Save the record
       </button>
     </li>
   </menu>
