@@ -15,7 +15,7 @@ const useARefusingService = async (page: Page): Promise<void> => {
   await desk(page).getByRole('button', { name: 'Settings' }).click()
   await settings(page).waitFor()
   await settings(page).locator('select[name="providerId"]').selectOption('llamacpp')
-  await settings(page).locator('input[name="baseUrl"]').fill('http://localhost:4323/no-such-service')
+  await settings(page).locator('input[name="baseUrl"]').fill('http://localhost:4323/refusing-service')
   await settings(page).getByRole('button', { name: 'Save' }).click()
   // Settings reached from a document's desk returns to that document, not to the
   // shelf: changing a setting mid-document should not cost the reader their place.
@@ -42,6 +42,9 @@ test.describe('a translation that is refused', () => {
     // The whole point: the reason reaches the reader rather than being stored
     // and forgotten, and the record is reachable from the failure that needs it.
     await expect(notice(page)).toContainText('The service said')
+    await expect(notice(page)).toContainText('Your credit balance is too low')
+    // The sentence, not the envelope it arrived in.
+    await expect(notice(page)).not.toContainText('invalid_request_error')
     await expect(notice(page).getByRole('button', { name: 'Save the record' })).toBeVisible()
   })
 
@@ -64,6 +67,6 @@ test.describe('a translation that is refused', () => {
     await desk(page).getByRole('button', { name: 'Back to the page' }).click()
     const row = sentenceRows(page).first()
     await expect(row.locator('.mark')).toHaveText('went wrong')
-    await expect(row.locator('.failure')).not.toBeEmpty()
+    await expect(row.locator('.failure')).toHaveText('Your credit balance is too low to access the Anthropic API.')
   })
 })

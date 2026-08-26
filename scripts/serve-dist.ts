@@ -8,6 +8,21 @@ const wantsHtml = (request: Request): boolean =>
   request.method === 'GET' && (request.headers.get('accept') ?? '').includes('text/html')
 
 /**
+ * A canned refusal in the shape a real service sends one, for the end-to-end
+ * test of the failure path. Copied from the body that ended a real run, so the
+ * test proves the readable sentence is lifted out of the envelope rather than
+ * printed with it.
+ */
+const REFUSAL = JSON.stringify({
+  type: 'error',
+  error: {
+    type: 'invalid_request_error',
+    message: 'Your credit balance is too low to access the Anthropic API.',
+  },
+  request_id: 'req_test',
+})
+
+/**
  * A foreground static server for the built output.
  *
  * `astro preview` daemonises itself, which makes Playwright's `webServer` think
@@ -22,6 +37,12 @@ Bun.serve({
   port,
   async fetch(request) {
     const path = new URL(request.url).pathname
+    switch (path.startsWith('/refusing-service')) {
+      case true:
+        return new Response(REFUSAL, { status: 400, headers: { 'content-type': 'application/json' } })
+      case false:
+        break
+    }
     const candidate = file(join(root, path === '/' ? 'index.html' : path))
     const found = request.method === 'GET' && (await candidate.exists())
     switch (found) {

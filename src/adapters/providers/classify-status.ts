@@ -1,8 +1,10 @@
 import { Option, pipe } from 'effect'
 import type { ProviderError } from '../../ports/provider-port.js'
+import { providerMessage } from './provider-message.js'
 
 type Rule = readonly [(status: number) => boolean, (status: number, body: string) => ProviderError]
 
+/** Applied after the message is lifted out, so a long envelope cannot hide a short reason. */
 const excerpt = (body: string) => body.slice(0, 400)
 
 const RULES: readonly Rule[] = [
@@ -12,9 +14,9 @@ const RULES: readonly Rule[] = [
   ],
   [
     (status) => status === 429 || status >= 500,
-    (status, body) => ({ tag: 'transient', status, message: excerpt(body) }),
+    (status, body) => ({ tag: 'transient', status, message: excerpt(providerMessage(body)) }),
   ],
-  [(status) => status >= 400, (_status, body) => ({ tag: 'badRequest', message: excerpt(body) })],
+  [(status) => status >= 400, (_status, body) => ({ tag: 'badRequest', message: excerpt(providerMessage(body)) })],
 ]
 
 /**

@@ -24,7 +24,9 @@ export const failureReason: (failure: BatchFailure) => string = Match.type<Batch
   Match.when({ tag: 'transient' }, (failure) =>
     `Could not reach the service${statusSuffix(failure.status)}. ${failure.message}`),
   Match.when({ tag: 'auth' }, (failure) => failure.message),
-  Match.when({ tag: 'badRequest' }, (failure) => `The service rejected the request. ${failure.message}`),
+  // No prefix: the service's own sentence says it was refused, and everything
+  // that shows this already marks it as a failure.
+  Match.when({ tag: 'badRequest' }, (failure) => failure.message),
   Match.when({ tag: 'malformedResponse' }, (failure) => `The reply could not be read. ${failure.message}`),
   Match.when({ tag: 'idMismatch' }, (failure) => mismatch(failure.missing, failure.unexpected)),
   Match.exhaustive,
