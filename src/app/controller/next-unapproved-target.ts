@@ -7,10 +7,10 @@ import { rowIndexOf } from '../../core/view/row-index-of.js'
 import { fromUndefined } from '../../core/option/from-undefined.js'
 
 /**
- * The next segment still waiting to be settled, searched over the rows the
+ * The next segment still waiting to be approved, searched over the rows the
  * current filter actually shows, so the jump always lands somewhere visible.
  */
-export const nextUnsettledTarget = (state: AppState, rows: readonly EditorRow[]): Option.Option<SegmentId> =>
+export const nextUnapprovedTarget = (state: AppState, rows: readonly EditorRow[]): Option.Option<SegmentId> =>
   nextUnapproved(rows)(
     Option.flatMap(
       Option.flatMap(state.project, (project) => fromUndefined(project.cursor)),

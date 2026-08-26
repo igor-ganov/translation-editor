@@ -3,16 +3,19 @@ import type { SegmentStatus } from './segment-status.js'
 export type Mark = { readonly modifier: string; readonly word: string }
 
 /**
- * A dot and a word. The word is not decoration: colour alone would leave the
- * five states indistinguishable to a reader who cannot separate them, and the
- * shortest of these is still shorter than an icon nobody can read.
+ * A dot and a word for each state.
+ *
+ * The words are the ones the task already uses — translated, edited, approved —
+ * not invented ones. An earlier set said "drafted", "your wording" and
+ * "untouched", which read well and told nobody what they meant; a word chosen
+ * for the metaphor rather than for the meaning is decoration.
  */
 const MARKS: Readonly<Record<SegmentStatus, Mark>> = {
-  untranslated: { modifier: 'mark--untouched', word: 'untouched' },
-  machine: { modifier: 'mark--machine', word: 'drafted' },
-  edited: { modifier: 'mark--hand', word: 'your wording' },
-  approved: { modifier: 'mark--settled', word: 'settled' },
-  failed: { modifier: 'mark--trouble', word: 'went wrong' },
+  untranslated: { modifier: 'mark--none', word: 'not translated' },
+  machine: { modifier: 'mark--machine', word: 'translated' },
+  edited: { modifier: 'mark--edited', word: 'edited by you' },
+  approved: { modifier: 'mark--approved', word: 'approved' },
+  failed: { modifier: 'mark--failed', word: 'failed' },
 }
 
 export const markOfStatus = (status: SegmentStatus): Mark => MARKS[status]

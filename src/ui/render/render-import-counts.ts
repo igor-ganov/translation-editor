@@ -17,6 +17,6 @@ export const renderImportCounts = (diff: ImportDiff) => html`
     ${line('Left untouched', diff.unchanged.length)}
     ${line('Sentences the file does not mention', diff.missingIds.length)}
     ${line('Ids in the file this document has never had', diff.unknownIds.length)}
-    ${line('Settled sentences that will stop being settled', diff.approvalsToClear.length)}
+    ${line('Approved sentences that will stop being approved', diff.approvalsToClear.length)}
   </dl>
 `

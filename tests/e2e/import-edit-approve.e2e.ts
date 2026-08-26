@@ -8,14 +8,14 @@ import {
   openDocument,
   reading,
   sentenceRows,
-  settle,
+  approve,
   writeIn,
 } from './support/open-document.js'
 
 const draft = async (page: Page, index: number, text: string): Promise<void> =>
   writeIn(sentenceRows(page).nth(index), text)
 
-test.describe('importing, editing and settling', () => {
+test.describe('importing, editing and approving', () => {
   test('imports a .docx and shows every paragraph with its sentences', async ({ page }) => {
     await openDocument(page)
     await expect(blockRows(page)).toHaveCount(3)
@@ -51,50 +51,50 @@ test.describe('importing, editing and settling', () => {
     await openDocument(page)
     await draft(page, 0, 'The Silent Observer, translated')
     await openDesk(page)
-    await expect(desk(page).locator('.thread__count')).toContainText('1 drafted')
+    await expect(desk(page).locator('.thread__count')).toContainText('1 translated')
 
     await page.reload()
     await editor(page).waitFor()
     await expect(reading(sentenceRows(page).first())).toHaveText('The Silent Observer, translated')
   })
 
-  test('editing unsettles a sentence, because the settled text has changed', async ({ page }) => {
+  test('editing unapproves a sentence, because the approved text has changed', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
     await draft(page, 0, 'a first attempt')
-    await settle(row).click()
-    await expect(settle(row)).toHaveAttribute('aria-pressed', 'true')
+    await approve(row).click()
+    await expect(approve(row)).toHaveAttribute('aria-pressed', 'true')
 
     await draft(page, 0, 'a second attempt')
-    await expect(settle(row)).toHaveAttribute('aria-pressed', 'false')
+    await expect(approve(row)).toHaveAttribute('aria-pressed', 'false')
   })
 
-  test('a translation with no text cannot be settled', async ({ page }) => {
+  test('a translation with no text cannot be approved', async ({ page }) => {
     await openDocument(page)
-    await expect(settle(sentenceRows(page).first())).toBeDisabled()
+    await expect(approve(sentenceRows(page).first())).toBeDisabled()
   })
 
-  test('settling every sentence of a paragraph reports the paragraph as settled', async ({ page }) => {
+  test('approving every sentence of a paragraph reports the paragraph as approved', async ({ page }) => {
     await openDocument(page)
     for (const index of [1, 2]) {
       await draft(page, index, `translation ${String(index)}`)
-      await settle(sentenceRows(page).nth(index)).click()
+      await approve(sentenceRows(page).nth(index)).click()
     }
-    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
-    await expect(settle(blockRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+    await expect(approve(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+    await expect(approve(blockRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('settling a paragraph cascades to its sentences and unsettling reverses it', async ({ page }) => {
+  test('approving a paragraph cascades to its sentences and unapproving reverses it', async ({ page }) => {
     await openDocument(page)
     for (const index of [1, 2]) await draft(page, index, `translation ${String(index)}`)
 
     const paragraph = blockRows(page).nth(1)
-    await settle(paragraph).click()
-    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
-    await expect(settle(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'true')
+    await approve(paragraph).click()
+    await expect(approve(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'true')
+    await expect(approve(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'true')
 
-    await settle(paragraph).click()
-    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'false')
-    await expect(settle(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'false')
+    await approve(paragraph).click()
+    await expect(approve(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'false')
+    await expect(approve(sentenceRows(page).nth(2))).toHaveAttribute('aria-pressed', 'false')
   })
 })

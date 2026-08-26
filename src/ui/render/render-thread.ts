@@ -17,15 +17,15 @@ export const renderThread = (progress: Progress) => html`
     aria-valuemin="0"
     aria-valuemax="100"
     aria-valuenow=${String(Math.round(progress.approvedRatio * 100))}
-    aria-label="Settled segments"
+    aria-label="Approved segments"
   >
     <span class="thread__track">
       <span class="thread__drafted" style=${`width:${percent(progress.coverageRatio)}`}></span>
       <span class="thread__done" style=${`width:${percent(progress.approvedRatio)}`}></span>
     </span>
     <span class="thread__count">
-      ${String(progress.approved)} of ${String(progress.total)} settled ·
-      ${String(progress.translated)} drafted
+      ${String(progress.approved)} of ${String(progress.total)} approved ·
+      ${String(progress.translated)} translated
     </span>
   </p>
 `

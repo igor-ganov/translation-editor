@@ -21,19 +21,19 @@ export const markStyles = css`
     background: currentColor;
     transform: translateY(-0.05em);
   }
-  .mark--untouched {
+  .mark--none {
     color: var(--mark-untouched);
   }
   .mark--machine {
     color: var(--mark-machine);
   }
-  .mark--hand {
+  .mark--edited {
     color: var(--mark-hand);
   }
-  .mark--settled {
+  .mark--approved {
     color: var(--mark-settled);
   }
-  .mark--trouble {
+  .mark--failed {
     color: var(--mark-trouble);
   }
 `

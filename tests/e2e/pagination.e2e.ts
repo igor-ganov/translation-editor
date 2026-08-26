@@ -67,7 +67,7 @@ test.describe('pages', () => {
     await openLong(page)
     await openContents(page)
     await expect(contents(page).locator('.contents li')).toHaveCount(3)
-    await expect(contents(page).locator('.contents__state').first()).toHaveText('untouched')
+    await expect(contents(page).locator('.contents__state').first()).toHaveText('not translated')
     await expect(contents(page).locator('.contents li[aria-current="page"]')).toHaveCount(1)
   })
 

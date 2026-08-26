@@ -9,7 +9,7 @@ import {
   openDocument,
   openEditor,
   sentenceRows,
-  settle,
+  approve,
   writeIn,
 } from './support/open-document.js'
 
@@ -29,10 +29,10 @@ test.describe('accessibility', () => {
   test('states every segment status in words, not only by colour', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
-    await expect(mark(row)).toHaveText('untouched')
+    await expect(mark(row)).toHaveText('not translated')
 
     await writeIn(row, 'a first attempt')
-    await expect(mark(row)).toHaveText('your wording')
+    await expect(mark(row)).toHaveText('edited by you')
   })
 
   test('describes the field by its status, so the state is announced with it', async ({ page }) => {
@@ -44,22 +44,22 @@ test.describe('accessibility', () => {
     await expect(row.locator(`#${String(describedBy)}`)).toHaveCount(1)
   })
 
-  test('reports settled progress as a progressbar with a value', async ({ page }) => {
+  test('reports approved progress as a progressbar with a value', async ({ page }) => {
     await openDocument(page)
     await openDesk(page)
     const bar = desk(page).locator('[role="progressbar"]')
     await expect(bar).toHaveAttribute('aria-valuenow', '0')
-    await expect(bar).toHaveAttribute('aria-label', 'Settled segments')
+    await expect(bar).toHaveAttribute('aria-label', 'Approved segments')
   })
 
-  test('settles and leaves the field from the keyboard alone', async ({ page }) => {
+  test('approves and leaves the field from the keyboard alone', async ({ page }) => {
     await openDocument(page)
     const row = sentenceRows(page).first()
     const box = await openEditor(row)
 
     await box.fill('a translation')
     await page.keyboard.press('Control+Enter')
-    await expect(settle(row)).toHaveAttribute('aria-pressed', 'true')
+    await expect(approve(row)).toHaveAttribute('aria-pressed', 'true')
     await expect(field(row)).toHaveCount(0)
   })
 

@@ -67,7 +67,7 @@ test.describe('the markup round trip', () => {
 
     await expect(slip(page)).toBeVisible()
     await expect(slip(page)).toContainText('Translations added')
-    await expect(slip(page)).toContainText('Settled sentences that will stop being settled')
+    await expect(slip(page)).toContainText('Approved sentences that will stop being approved')
 
     await slip(page).getByRole('button', { name: 'Bring it in' }).click()
     await expect(slip(page)).toHaveCount(0)

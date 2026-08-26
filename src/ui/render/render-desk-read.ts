@@ -6,8 +6,8 @@ import { editorEvents } from '../element/editor-events.js'
 const FILTERS: readonly (readonly [SegmentFilter, string])[] = [
   ['all', 'Everything'],
   ['untranslated', 'Not translated'],
-  ['unapproved', 'Not settled'],
-  ['failed', 'Went wrong'],
+  ['unapproved', 'Not approved'],
+  ['failed', 'Failed'],
 ]
 
 const choose = (host: HTMLElement, filter: SegmentFilter) => () => {

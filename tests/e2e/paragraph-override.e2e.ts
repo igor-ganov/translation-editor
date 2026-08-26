@@ -7,7 +7,7 @@ import {
   openDocument,
   reading,
   sentenceRows,
-  settle,
+  approve,
   writeIn,
 } from './support/open-document.js'
 
@@ -61,22 +61,22 @@ test.describe('paragraph translation overriding its sentences', () => {
   test('an overridden paragraph counts as one unit of progress', async ({ page }) => {
     await openDocument(page)
     await openDesk(page)
-    await expect(desk(page).locator('.thread__count')).toContainText('0 of 4 settled')
+    await expect(desk(page).locator('.thread__count')).toContainText('0 of 4 approved')
     await desk(page).getByRole('button', { name: 'Back to the page' }).click()
 
     await override(page)
     await openDesk(page)
-    await expect(desk(page).locator('.thread__count')).toContainText('0 of 3 settled')
+    await expect(desk(page).locator('.thread__count')).toContainText('0 of 3 approved')
   })
 
-  test('settling an overridden paragraph does not touch its sentences', async ({ page }) => {
+  test('approving an overridden paragraph does not touch its sentences', async ({ page }) => {
     await openDocument(page)
     await draftSentences(page)
     await override(page)
 
     const paragraph = blockRows(page).nth(1)
-    await settle(paragraph).click()
-    await expect(settle(paragraph)).toHaveAttribute('aria-pressed', 'true')
-    await expect(settle(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'false')
+    await approve(paragraph).click()
+    await expect(approve(paragraph)).toHaveAttribute('aria-pressed', 'true')
+    await expect(approve(sentenceRows(page).nth(1))).toHaveAttribute('aria-pressed', 'false')
   })
 })

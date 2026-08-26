@@ -66,7 +66,7 @@ test.describe('a translation that is refused', () => {
 
     await desk(page).getByRole('button', { name: 'Back to the page' }).click()
     const row = sentenceRows(page).first()
-    await expect(row.locator('.mark')).toHaveText('went wrong')
+    await expect(row.locator('.mark')).toHaveText('failed')
     await expect(row.locator('.failure')).toHaveText('Your credit balance is too low to access the Anthropic API.')
   })
 })

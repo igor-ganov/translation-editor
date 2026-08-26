@@ -14,7 +14,7 @@ const because = (reason: string | undefined): string =>
 
 const partly = (outcome: TranslationOutcome): Notice => ({
   tag: 'error',
-  text: `Translated ${String(outcome.translated)}, but ${plural(outcome.failed, 'sentence', 'sentences')} failed.${because(outcome.reason)} The "Went wrong" filter on the desk collects them.`,
+  text: `Translated ${String(outcome.translated)}, but ${plural(outcome.failed, 'sentence', 'sentences')} failed.${because(outcome.reason)} The "Failed" filter on the desk collects them.`,
 })
 
 const nothing = (outcome: TranslationOutcome): Notice => ({

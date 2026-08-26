@@ -10,7 +10,7 @@ export const blockRows = (page: Page) => editor(page).locator('te-block-row')
 export const sentenceRows = (page: Page) => editor(page).locator('te-sentence-pair')
 
 export const field = (row: Locator) => row.locator('textarea')
-export const settle = (row: Locator) => row.getByRole('button', { name: /^(settle|unsettle)$/ })
+export const approve = (row: Locator) => row.getByRole('button', { name: /^(approve|unapprove)$/ })
 export const mark = (row: Locator) => row.locator('.mark')
 
 /** The translation as it is read: text on the page, not a control. */
@@ -18,7 +18,7 @@ export const reading = (row: Locator) => row.locator('p.leaf__target')
 
 /** Editing is entered deliberately, so a test that writes has to open the editor. */
 export const openEditor = async (row: Locator): Promise<Locator> => {
-  await row.getByRole('button', { name: /^(edit|write one for the whole paragraph)$/ }).click()
+  await row.getByRole('button', { name: /^(edit|translate the paragraph as one)$/ }).click()
   await field(row).waitFor()
   return field(row)
 }

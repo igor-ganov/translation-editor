@@ -6,10 +6,10 @@ type Rule = readonly [(summary: PageSummary) => boolean, (summary: PageSummary) 
 /** First match wins, so the order is the meaning. */
 const RULES: readonly Rule[] = [
   [(summary) => summary.total === 0, () => 'nothing to translate'],
-  [(summary) => summary.approved === summary.total, () => 'finished'],
-  [(summary) => summary.translated === 0, () => 'untouched'],
-  [(summary) => summary.approved === 0, () => 'drafted, none settled'],
-  [() => true, (summary) => `${String(summary.approved)} of ${String(summary.total)} settled`],
+  [(summary) => summary.approved === summary.total, () => 'all approved'],
+  [(summary) => summary.translated === 0, () => 'not translated'],
+  [(summary) => summary.approved === 0, () => 'translated, none approved'],
+  [() => true, (summary) => `${String(summary.approved)} of ${String(summary.total)} approved`],
 ]
 
 /**

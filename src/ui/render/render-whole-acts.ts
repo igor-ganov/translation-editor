@@ -2,26 +2,31 @@ import { html } from 'lit'
 import type { BlockRow } from '../../core/view/types.js'
 import type { LeafEditing } from './leaf-editing.js'
 import { textOf } from '../element/text-of.js'
-import { onSettle } from '../element/on-settle.js'
+import { onApprove } from '../element/on-approve.js'
 import { emit } from '../element/emit.js'
 import { segmentEvents } from '../element/segment-events.js'
 import { whenPresent } from './when-present.js'
 
 /** Indexed by `Number(...)`, so the wording needs no branch. */
 const SENTENCE_WORDS: readonly string[] = ['hide the sentences', 'show the sentences']
-const SETTLE_WORDS: readonly string[] = ['settle', 'unsettle']
-const WRITE_WORDS: readonly string[] = ['write one for the whole paragraph', 'edit']
+const APPROVE_WORDS: readonly string[] = ['approve', 'unapprove']
+const WRITE_WORDS: readonly string[] = ['translate the paragraph as one', 'edit']
 
 const collapsing = (host: HTMLElement, row: BlockRow) => () => {
   emit(host, segmentEvents.toggleCollapse, { id: row.id })
 }
 
-/** Writing the paragraph's own translation, settling it, and folding its sentences away. */
+/** Writing the paragraph's own translation, approving it, and folding its sentences away. */
 export const renderWholeActs = (host: HTMLElement, row: BlockRow, mode: LeafEditing) => html`
   ${whenPresent(
     !mode.editing,
     () => html`
-      <button type="button" class="act act--quiet" @click=${mode.start}>
+      <button
+        type="button"
+        class="act act--quiet"
+        title="One translation for the whole paragraph, used instead of the sentence translations"
+        @click=${mode.start}
+      >
         ${WRITE_WORDS[Number(textOf(row.translation).length > 0)] ?? 'edit'}
       </button>
     `,
@@ -30,9 +35,10 @@ export const renderWholeActs = (host: HTMLElement, row: BlockRow, mode: LeafEdit
     type="button"
     class="act act--quiet"
     aria-pressed=${row.approved}
-    @click=${onSettle(host, row.id, row.approved, segmentEvents.approveBlock)}
+    title="Mark this paragraph as final"
+    @click=${onApprove(host, row.id, row.approved, segmentEvents.approveBlock)}
   >
-    ${SETTLE_WORDS[Number(row.approved)] ?? 'settle'}
+    ${APPROVE_WORDS[Number(row.approved)] ?? 'approve'}
   </button>
   <button
     type="button"

@@ -22,7 +22,7 @@ describe('finishNotice', () => {
     expect(notice.tag).toBe('error')
     expect(textOf(notice)).toContain('9')
     expect(textOf(notice)).toContain('3')
-    expect(textOf(notice)).toContain('Went wrong')
+    expect(textOf(notice)).toContain('"Failed"')
   })
 
   it('names the reason, which is the thing the message was missing entirely', () => {

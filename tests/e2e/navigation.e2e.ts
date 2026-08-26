@@ -7,26 +7,26 @@ import {
   openDocument,
   runFromDesk,
   sentenceRows,
-  settle,
+  approve,
   writeIn,
 } from './support/open-document.js'
 
 test.describe('moving around the document', () => {
-  test('goes to the next sentence still waiting to be settled', async ({ page }) => {
+  test('goes to the next sentence still waiting to be approved', async ({ page }) => {
     await openDocument(page)
     const first = sentenceRows(page).first()
     await writeIn(first, 'translated')
-    await settle(first).click()
+    await approve(first).click()
 
     await runFromDesk(page, 'Next page needing work')
     await expect(app(page).locator('.notice')).toHaveCount(0)
   })
 
-  test('says so when there is nothing left to settle in the view', async ({ page }) => {
+  test('says so when there is nothing left to approve in the view', async ({ page }) => {
     await openDocument(page)
-    await chooseFilter(page, 'Went wrong')
+    await chooseFilter(page, 'Failed')
     await runFromDesk(page, 'Next page needing work')
-    await expect(app(page).locator('.notice')).toContainText('Nothing left to settle')
+    await expect(app(page).locator('.notice')).toContainText('Nothing left to approve')
   })
 
   test('filters the view down to untranslated sentences', async ({ page }) => {
@@ -54,7 +54,7 @@ test.describe('moving around the document', () => {
     await openDocument(page)
     await expect(sentenceRows(page)).toHaveCount(4)
 
-    await sentenceRows(page).nth(1).getByRole('button', { name: 'join' }).click()
+    await sentenceRows(page).nth(1).getByRole('button', { name: 'merge with next' }).click()
     await expect(sentenceRows(page)).toHaveCount(3)
 
     await runFromDesk(page, /^Undo/)

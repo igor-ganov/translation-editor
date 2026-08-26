@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { openDocument, sentenceRows, settle } from './support/open-document.js'
+import { approve, openDocument, sentenceRows } from './support/open-document.js'
 
 const columnCount = async (page: Page) =>
   await sentenceRows(page)
@@ -34,7 +34,7 @@ test.describe('responsive layout', () => {
     await openDocument(page)
     // The ink is a word; the target has to be a thumb. The hit area is grown by a
     // pseudo-element so the two can differ without the design changing.
-    const box = await settle(sentenceRows(page).nth(1)).evaluate((element) => {
+    const box = await approve(sentenceRows(page).nth(1)).evaluate((element) => {
       const after = getComputedStyle(element, '::after')
       const own = element.getBoundingClientRect()
       return own.height + Math.abs(Number.parseFloat(after.top)) * 2

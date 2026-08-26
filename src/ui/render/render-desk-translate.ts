@@ -31,7 +31,7 @@ export const renderDeskTranslate = (
     <h2>Translate</h2>
     <p class="group__what">
       Reads this document as ${languageName(languages.from)} and writes ${languageName(languages.to)}, using
-      ${model}. Nothing you wrote or settled yourself is touched.
+      ${model}. Nothing you wrote or approved yourself is touched.
     </p>
     <menu class="acts">
       <li>${(CONTROLS[Number(translating)] ?? CONTROLS[0])?.(host, outstanding)}</li>
